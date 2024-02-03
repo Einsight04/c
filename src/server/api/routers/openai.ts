@@ -14,42 +14,6 @@ const wsUrl = `wss://api.elevenlabs.io/v1/text-to-speech/${voiceId}/stream-input
 // create a global event emitter (could be replaced by redis, etc)
 const ee = new EventEmitter();
 
-const textChunker = async function* (chunks: AsyncIterable<string>) {
-  const splitters = [
-    ".",
-    ",",
-    "?",
-    "!",
-    ";",
-    ":",
-    "—",
-    "-",
-    "(",
-    ")",
-    "[",
-    "]",
-    "}",
-    " ",
-  ];
-  let buffer = "";
-
-  for await (const text of chunks) {
-    if (splitters.includes(buffer.slice(-1))) {
-      yield buffer + " ";
-      buffer = text;
-    } else if (splitters.includes(text[0] ?? "")) {
-      yield buffer + text[0] + " ";
-      buffer = text.slice(1);
-    } else {
-      buffer += text;
-    }
-  }
-
-  if (buffer) {
-    yield buffer + " ";
-  }
-};
-
 export const openaiRouter = createTRPCRouter({
   streamAudio: publicProcedure.subscription(() => {
     return observable<{ chunk: string }>((emit) => {
@@ -64,18 +28,39 @@ export const openaiRouter = createTRPCRouter({
       };
     });
   }),
-  
+
   // This shit probably works idk
   sendTextAndImages: publicProcedure
     .input(
-      z.object({ text: z.optional(z.string()), images: z.array(z.string()) }),
+      z.object({
+        audioBase64: z.optional(z.string()),
+        imagesBase64: z.array(z.string()),
+      }),
     )
     .mutation(async ({ ctx, input }) => {
-      const possibleText = input.text
-        ? [{ type: "text", text: input.text } as const]
+      let possibleText = "";
+
+      if (input.audioBase64) {
+        const audio = Buffer.from(input.audioBase64, "base64");
+
+        const { result, error } =
+          await ctx.deepgram.listen.prerecorded.transcribeFile(audio, {
+            model: "nova-2",
+          });
+
+        if (error) {
+          console.error("Error with Deepgram API: ", error);
+        }
+
+        possibleText =
+          result?.results.channels[0]?.alternatives[0]?.transcript ?? "";
+      }
+
+      const possiblePrompt = possibleText
+        ? [{ type: "text", text: possibleText } as const]
         : [];
 
-      const imageContents = input.images.map(
+      const imageContents = input.imagesBase64.map(
         (base64Image) =>
           ({
             type: "image_url",
@@ -83,7 +68,7 @@ export const openaiRouter = createTRPCRouter({
           }) as const,
       );
 
-      const content = [...possibleText, ...imageContents];
+      const content = [...possiblePrompt, ...imageContents];
 
       const response = await ctx.openai.chat.completions.create({
         model: "gpt-4-vision-preview",
@@ -95,8 +80,6 @@ export const openaiRouter = createTRPCRouter({
         ],
         stream: true,
       });
-
-      const contentChunks: string[] = [];
 
       const socket = new WebSocket(wsUrl);
 
@@ -115,21 +98,27 @@ export const openaiRouter = createTRPCRouter({
           socket.send(JSON.stringify(bosMessage));
 
           const sentenceBreaks = [".", "!", "?"];
-          let accum = '';
+          let accum = "";
           for await (const message of response) {
             const chunk = message.choices[0]?.delta.content ?? null;
 
             if (chunk) {
-              if (sentenceBreaks.some(punctuation => chunk.endsWith(punctuation) || chunk.includes(punctuation + ' '))) {
+              if (
+                sentenceBreaks.some(
+                  (punctuation) =>
+                    chunk.endsWith(punctuation) ||
+                    chunk.includes(punctuation + " "),
+                )
+              ) {
                 const chunks = chunk.split(/(?<=[.!?])(?=\s|$)/);
-                const sentences = accum + chunks.slice(0, -1).join('');
-                accum = chunks[chunks.length - 1] ?? '';
+                const sentences = accum + chunks.slice(0, -1).join("");
+                accum = chunks[chunks.length - 1] ?? "";
 
                 const textMessage = {
-                  text: sentences.trim() + ' ',
+                  text: sentences.trim() + " ",
                   try_trigger_generation: true,
                 };
-  
+
                 socket.send(JSON.stringify(textMessage));
               } else {
                 accum += chunk;
