@@ -3,7 +3,7 @@ import ws from "ws";
 import { createTRPCContext } from "./trpc";
 import { appRouter } from "./root";
 
-const wss = new ws.Server({
+export const wss = new ws.Server({
   port: 3001,
 });
 

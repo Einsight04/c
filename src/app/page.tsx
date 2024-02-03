@@ -7,20 +7,21 @@ import { CreatePost } from "~/app/_components/create-post";
 import { api } from "~/trpc/react";
 import useAudioRecorder from "./hooks/useAudioRecorder";
 import { createClient } from "@deepgram/sdk";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   noStore();
 
   const { recording, startRecording, stopRecording, audioUrl, audioBlob } =
     useAudioRecorder();
+  const [transcription, setTranscription] = useState<string | null>(null);
   const deepgram = api.transcribe.transcribe.useMutation();
 
   async function transcribeAudio() {
     const buff = Buffer.from(await audioBlob!!.arrayBuffer());
     
     const { result } = await deepgram.mutateAsync(buff.toString('base64'));
-    console.log(result); // TODO: do something with the result!
+    setTranscription(result);
   }
 
   useEffect(() => {
@@ -51,6 +52,7 @@ export default function Home() {
         <div>
           <p>Recording Complete:</p>
           <audio src={audioUrl} controls />
+          {transcription && <p>Transcription: {transcription}</p>}
         </div>
       )}
     </div>
