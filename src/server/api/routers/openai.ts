@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { openai } from "~/server/services/openai";
 import { EventEmitter } from "events";
 import { observable } from "@trpc/server/observable";
 
@@ -24,7 +23,7 @@ export const openaiRouter = createTRPCRouter({
   }),
   sendTextAndImages: publicProcedure
     .input(z.object({ text: z.string(), images: z.array(z.string()) }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ ctx, input }) => {
       const possibleText = input.text
         ? [{ type: "text", text: input.text } as const]
         : [];
@@ -39,7 +38,7 @@ export const openaiRouter = createTRPCRouter({
 
       const content = [...possibleText, ...imageContents];
 
-      const response = await openai.chat.completions.create({
+      const response = await ctx.openai.chat.completions.create({
         model: "gpt-4-vision-preview",
         messages: [
           {
