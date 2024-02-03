@@ -21,7 +21,8 @@ export const env = createEnv({
     AUTH0_ISSUER_BASE_URL: z.string(),
     AUTH0_CLIENT_ID: z.string(),
     AUTH0_CLIENT_SECRET: z.string(),
-    OPEN_AI_KEY: z.string(),
+    OPEN_AI_API_KEY: z.string(),
+    ELEVENLABS_API_KEY: z.string(),
   },
 
   /**
@@ -43,7 +44,8 @@ export const env = createEnv({
     AUTH0_ISSUER_BASE_URL: process.env.AUTH0_ISSUER_BASE_URL,
     AUTH0_CLIENT_ID: process.env.AUTH0_CLIENT_ID,
     AUTH0_CLIENT_SECRET: process.env.AUTH0_CLIENT_SECRET,
-    OPEN_AI_KEY: process.env.OPEN_AI_KEY,
+    OPEN_AI_API_KEY: process.env.OPEN_AI_API_KEY,
+    ELEVENLABS_API_KEY: process.env.ELEVENLABS_API_KEY,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
