@@ -3,6 +3,7 @@ import { useState, useCallback } from "react";
 type UseAudioRecorderReturn = {
   recording: boolean;
   audioUrl: string;
+  audioBlob: Blob | null;
   startRecording: () => void;
   stopRecording: () => void;
 };
@@ -10,6 +11,7 @@ type UseAudioRecorderReturn = {
 const useAudioRecorder = (): UseAudioRecorderReturn => {
   const [recording, setRecording] = useState<boolean>(false);
   const [audioUrl, setAudioUrl] = useState<string>("");
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null,
   );
@@ -26,9 +28,10 @@ const useAudioRecorder = (): UseAudioRecorderReturn => {
         };
 
         recorder.onstop = () => {
-          const audioBlob = new Blob(audioChunks, { type: "audio/mp4" });
+          const audioBlob = new Blob(audioChunks, { type: "audio/mp3" });
           const url = URL.createObjectURL(audioBlob);
           setAudioUrl(url);
+          setAudioBlob(audioBlob);
         };
 
         recorder.start();
@@ -47,6 +50,7 @@ const useAudioRecorder = (): UseAudioRecorderReturn => {
   return {
     recording,
     audioUrl,
+    audioBlob,
     startRecording,
     stopRecording,
   };

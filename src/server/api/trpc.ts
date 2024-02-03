@@ -13,6 +13,7 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { db } from "~/server/db";
+import { deepgram } from "../deepgram";
 
 /**
  * 1. CONTEXT
@@ -31,6 +32,7 @@ export const createTRPCContext = async (
 ) => {
   return {
     db,
+    deepgram,
     ...opts,
   };
 };

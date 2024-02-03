@@ -1,11 +1,13 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
-// Define a custom hook called useVideoCapture
-export function useVideoCapture() {
+// Define a custom hook called useCameraRecorder
+export function useCameraRecorder() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  // State to store the most recent image's data URL
+  const [imageDataUrl, setImageDataUrl] = useState<string>('');
 
-  // Function to capture an image from the video stream and log it
+  // Function to capture an image from the video stream
   const captureImage = () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
@@ -13,9 +15,10 @@ export function useVideoCapture() {
       const context = canvas.getContext('2d');
       if (context) {
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        // Convert the canvas image to a data URL and send it to OpenAI API or log it
-        const imageDataUrl = canvas.toDataURL('image/jpeg');
-        console.log(imageDataUrl); // Log the data URL or handle it as needed
+        // Convert the canvas image to a data URL
+        const dataUrl = canvas.toDataURL('image/jpeg');
+        // Update the state with the new image data URL
+        setImageDataUrl(dataUrl);
       }
     }
   };
@@ -29,34 +32,29 @@ export function useVideoCapture() {
         if (video) {
           video.srcObject = stream;
           await video.play();
+
+          // Set an interval to capture an image every second
+          const intervalId = setInterval(captureImage, 1000);
+
+          // Clear interval on component unmount
+          return () => clearInterval(intervalId);
         }
-  
-        // Set an interval to capture image every second
-        const intervalId = setInterval(captureImage, 1000);
-  
-        // Clear interval on component unmount
-        return () => clearInterval(intervalId);
       } catch (error) {
         console.error('Error accessing the camera: ', error);
       }
     };
-  
+
     accessCamera().catch((error) => console.error('Error initializing camera: ', error));
-  
-    // Store the current value of the ref in a variable
-    const currentVideo = videoRef.current;
-  
+
     // Cleanup function to stop the video stream on component unmount
     return () => {
-      if (currentVideo?.srcObject) {
-        // Use the stored value of the video ref
-        const tracks = (currentVideo.srcObject as MediaStream).getTracks();
+      if (videoRef.current?.srcObject) {
+        const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
         tracks.forEach(track => track.stop());
       }
     };
   }, []); // Empty dependency array means this effect runs only on mount and cleanup runs on unmount
-  
 
-  // Return the refs so they can be used in the component
-  return { videoRef, canvasRef };
+  // Return the refs and the most recent image's data URL so they can be used in the component
+  return { videoRef, canvasRef, imageDataUrl };
 }
