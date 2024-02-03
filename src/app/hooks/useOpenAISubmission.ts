@@ -10,7 +10,7 @@ type Base64Image = {
 export const useOpenAISubmission = () => {
   const sendTextAndImages = api.openai.sendTextAndImages.useMutation();
 
-  const [text, setText] = useState<string>("");
+  const [text, setText] = useState<string>("do you see the image");
   const [images, setImages] = useState<Base64Image[]>([]);
   const [response, setResponse] =
     useState<RouterOutputs["openai"]["sendTextAndImages"]>(null);
