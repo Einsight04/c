@@ -51,8 +51,8 @@ export const useOpenAISubmission = () => {
 
     try {
       const response = await sendTextAndImages.mutateAsync({
-        text,
-        images: images.map(({ data }) => data), // Why are we passing in the old images??? Remove mapping for single image
+        audioBase64: text,
+        imagesBase64: images.map(({ data }) => data), // Why are we passing in the old images??? Remove mapping for single image
       });
       setResponse(response);
     } catch (error) {

@@ -14,8 +14,6 @@ export default function Home() {
 
   const { recording, startRecording, stopRecording, audioUrl, audioBlob } =
     useAudioRecorder();
-  const [transcription, setTranscription] = useState<string | null>(null);
-  const deepgram = api.transcribe.transcribe.useMutation();
   const sendTextAndImages = api.openai.sendTextAndImages.useMutation();
   const [counter, setCounter] = useState(0);
 
@@ -35,8 +33,8 @@ export default function Home() {
 
   const testEndToEndShitMinusDeepgram = async () => {
     await sendTextAndImages.mutateAsync({
-      text: "hello world",
-      images: [],
+      audioBase64: "hello world",
+      imagesBase64: [],
     });
   };
 
