@@ -12,8 +12,8 @@ dependencies:
     specifier: ^3.1.6
     version: 3.1.6
   '@mapbox/mapbox-sdk':
-    specifier: ^0.15.3
-    version: 0.15.3
+    specifier: ^0.14.0
+    version: 0.14.0
   '@prisma/client':
     specifier: ^5.6.0
     version: 5.6.0(prisma@5.6.0)
@@ -73,6 +73,9 @@ devDependencies:
   '@types/eslint':
     specifier: ^8.44.7
     version: 8.44.7
+  '@types/mapbox__mapbox-sdk':
+    specifier: ^0.14.0
+    version: 0.14.0
   '@types/node':
     specifier: ^18.17.0
     version: 18.17.0
@@ -338,8 +341,8 @@ packages:
     resolution: {integrity: sha512-HP6XvfNIzfoMVfyGjBckjiAOQK9WfX0ywdLubuPMPv+Vqf5fj0uCbgBQYpiqcWZT6cbyyRnTSXDheT1ugvF6UQ==}
     dev: false
 
-  /@mapbox/mapbox-sdk@0.15.3:
-    resolution: {integrity: sha512-axkdkWzSnH5Nky6plqS1jZc5W4txWQimA3iF1CbYVQYuR1tBZZwe8JcWVB8Lw8y06VuYQLQ7SQscyZagdczUJg==}
+  /@mapbox/mapbox-sdk@0.14.0:
+    resolution: {integrity: sha512-YZou1lxXWG5XZfrhJiRBeCWIDxvtWh833F+kmNqQdm9Xy7NENgF8w1xZeuMxCccsAKtVrB55oZo8vrlrGnIk4g==}
     engines: {node: '>=6'}
     dependencies:
       '@mapbox/fusspot': 0.4.0
@@ -719,6 +722,10 @@ packages:
       '@types/serve-static': 1.15.5
     dev: false
 
+  /@types/geojson@7946.0.14:
+    resolution: {integrity: sha512-WCfD5Ht3ZesJUsONdhvm84dmzWOiOzOAqOncN0++w0lBw1o8OuDNJF2McvvCef/yBqb/HYRahp1BYtODFQ8bRg==}
+    dev: true
+
   /@types/http-cache-semantics@4.0.4:
     resolution: {integrity: sha512-1m0bIFVc7eJWyve9S0RnuRgcQqF/Xd5QsUZAZeQFr1Q3/p9JWoQQEqmVy+DPTNpGXwhgIetAoYF8JSc33q29QA==}
     dev: false
@@ -740,6 +747,20 @@ packages:
     dependencies:
       '@types/node': 18.17.0
     dev: false
+
+  /@types/mapbox-gl@2.7.20:
+    resolution: {integrity: sha512-vuczqb42fXjqGa3Pe4ahYv80We/eM//4pelVYxRXV/DYBVGsD+XhmZNUD2aIdH6mcEV601/k6Z5dn6QFtULFCQ==}
+    dependencies:
+      '@types/geojson': 7946.0.14
+    dev: true
+
+  /@types/mapbox__mapbox-sdk@0.14.0:
+    resolution: {integrity: sha512-c8MP61xN2Xp/1VDR78AA6crdqbmryZxekc2tlnmgcdc31SFnSZpeOWVFiM3Ngmgkkr+3IL+I8lAhsRKEijeC5A==}
+    dependencies:
+      '@types/geojson': 7946.0.14
+      '@types/mapbox-gl': 2.7.20
+      '@types/node': 18.17.0
+    dev: true
 
   /@types/mime@1.3.5:
     resolution: {integrity: sha512-/pyBZWSLD2n0dcHE3hq8s8ZvcETHtEuF+3E7XVt0Ig2nvsVQXdghHVcEkIWjy9A0wKfTn97a/PSDYohKIlnP/w==}
