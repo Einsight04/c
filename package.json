@@ -7,13 +7,9 @@
     "build": "next build",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
-<<<<<<< HEAD
     "dev:ws": "tsx watch src/server/api/ws-server.ts --tsconfig tsconfig.server.json",
     "dev:next": "next dev",
     "dev": "run-p dev:*",
-=======
-    "dev": "bun run src/server",
->>>>>>> 66d1421d5e385a5986a4d63f0e497dc48fd528b2
     "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start"
