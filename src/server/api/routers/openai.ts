@@ -65,7 +65,9 @@ export const openaiRouter = createTRPCRouter({
     });
   }),
   sendTextAndImages: publicProcedure
-    .input(z.object({ text: z.string(), images: z.array(z.string()) }))
+    .input(
+      z.object({ text: z.optional(z.string()), images: z.array(z.string()) }),
+    )
     .mutation(async ({ ctx, input }) => {
       const possibleText = input.text
         ? [{ type: "text", text: input.text } as const]
