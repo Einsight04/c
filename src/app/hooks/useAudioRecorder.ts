@@ -28,10 +28,10 @@ const useAudioRecorder = (): UseAudioRecorderReturn => {
         };
 
         recorder.onstop = () => {
-          const audioBlob2 = new Blob(audioChunks, { type: "audio/mp3" });
-          const url = URL.createObjectURL(audioBlob2);
+          const audioBlob = new Blob(audioChunks, { type: "audio/mp3" });
+          const url = URL.createObjectURL(audioBlob);
           setAudioUrl(url);
-          setAudioBlob(audioBlob2);
+          setAudioBlob(audioBlob);
         };
 
         recorder.start();
