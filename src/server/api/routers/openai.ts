@@ -2,8 +2,26 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { openai } from "~/server/services/openai";
+import { EventEmitter } from "events";
+import { observable } from "@trpc/server/observable";
+
+// create a global event emitter (could be replaced by redis, etc)
+const ee = new EventEmitter();
 
 export const openaiRouter = createTRPCRouter({
+  streamContent: publicProcedure.subscription(() => {
+    return observable<{ chunk: string }>((emit) => {
+      const listener = (chunk: string) => {
+        emit.next({ chunk });
+      };
+
+      ee.on("contentChunk", listener);
+
+      return () => {
+        ee.off("contentChunk", listener);
+      };
+    });
+  }),
   sendTextAndImages: publicProcedure
     .input(z.object({ text: z.string(), images: z.array(z.string()) }))
     .mutation(async ({ input }) => {
@@ -29,8 +47,12 @@ export const openaiRouter = createTRPCRouter({
             content,
           },
         ],
+        stream: true,
       });
 
-      return response.choices[0]?.message.content ?? null;
+      for await (const message of response) {
+        const chunk = message.choices[0]?.delta.content ?? null;
+        ee.emit("contentChunk", chunk);
+      }
     }),
 });
