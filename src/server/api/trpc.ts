@@ -7,8 +7,8 @@
  * need to use are documented accordingly near the end.
  */
 import { initTRPC } from "@trpc/server";
-import { CreateHTTPContextOptions } from "@trpc/server/adapters/standalone";
-import { CreateWSSContextFnOptions } from "@trpc/server/adapters/ws";
+import { type CreateHTTPContextOptions } from "@trpc/server/adapters/standalone";
+import { type CreateWSSContextFnOptions } from "@trpc/server/adapters/ws";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
@@ -29,7 +29,7 @@ import { openai } from "../services/openai";
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (
-  opts: CreateHTTPContextOptions | CreateWSSContextFnOptions,
+  opts?: CreateHTTPContextOptions | CreateWSSContextFnOptions,
 ) => {
   return {
     db,
