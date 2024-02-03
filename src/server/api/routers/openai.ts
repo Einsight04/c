@@ -122,7 +122,7 @@ export const openaiRouter = createTRPCRouter({
             if (chunk) {
               if (sentenceBreaks.some(punctuation => chunk.endsWith(punctuation) || chunk.includes(punctuation + ' '))) {
                 const chunks = chunk.split(/(?<=[.!?])(?=\s|$)/);
-                const sentences = accum + chunks.slice(0, -1);
+                const sentences = accum + chunks.slice(0, -1).join('');
                 accum = chunks[chunks.length - 1] ?? '';
 
                 const textMessage = {
