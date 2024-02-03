@@ -64,6 +64,8 @@ export const openaiRouter = createTRPCRouter({
       };
     });
   }),
+  
+  // This shit probably works idk
   sendTextAndImages: publicProcedure
     .input(
       z.object({ text: z.optional(z.string()), images: z.array(z.string()) }),

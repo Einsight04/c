@@ -1,7 +1,5 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
-import { set } from "zod";
 import { useCameraRecorder } from "~/app/hooks/useCameraRecorder";
 import { useOpenAISubmission } from "~/app/hooks/useOpenAISubmission";
 

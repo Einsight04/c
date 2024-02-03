@@ -13,14 +13,14 @@ export const useOpenAISubmission = () => {
   const [text, setText] = useState<string>("do you see the image");
   const [images, setImages] = useState<Base64Image[]>([]);
   const [response, setResponse] =
-    useState<RouterOutputs["openai"]["sendTextAndImages"]>(null);
+    useState<RouterOutputs["openai"]["sendTextAndImages"]>();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const clearAll = useCallback(() => {
     setText("");
     setImages([]);
-    setResponse(null);
+    setResponse();
     setLoading(false);
     setError(null);
   }, []);
@@ -38,7 +38,7 @@ export const useOpenAISubmission = () => {
       id: Date.now().toString(),
       data: base64Data,
     };
-    setImages((currentImages) => [...currentImages, newImage]);
+    setImages((currentImages) => [...currentImages, newImage]); // Why are we passing in the old images???
   }, []);
 
   const setTextContent = useCallback((textContent: string) => {
@@ -52,7 +52,7 @@ export const useOpenAISubmission = () => {
     try {
       const response = await sendTextAndImages.mutateAsync({
         text,
-        images: images.map(({ data }) => data),
+        images: images.map(({ data }) => data), // Why are we passing in the old images??? Remove mapping for single image
       });
       setResponse(response);
     } catch (error) {
