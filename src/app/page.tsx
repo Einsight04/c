@@ -4,14 +4,30 @@ import { unstable_noStore as noStore } from "next/cache";
 import Link from "next/link";
 
 import { CreatePost } from "~/app/_components/create-post";
-import { api } from "~/trpc/server";
+import { api } from "~/trpc/react";
 import useAudioRecorder from "./hooks/useAudioRecorder";
+import { createClient } from "@deepgram/sdk";
+import { useEffect } from "react";
 
 export default function Home() {
   noStore();
 
-  const { recording, startRecording, stopRecording, audioUrl } =
+  const { recording, startRecording, stopRecording, audioUrl, audioBlob } =
     useAudioRecorder();
+  const deepgram = api.transcribe.transcribe.useMutation();
+
+  async function transcribeAudio() {
+    const buff = Buffer.from(await audioBlob!!.arrayBuffer());
+    
+    const { result } = await deepgram.mutateAsync(buff.toString('base64'));
+    console.log(result); // TODO: do something with the result!
+  }
+
+  useEffect(() => {
+    if (recording === false && audioBlob) {
+      transcribeAudio();
+    }
+  }, [audioBlob]);
 
   return (
     <div style={{ padding: "20px", textAlign: "center" }}>
