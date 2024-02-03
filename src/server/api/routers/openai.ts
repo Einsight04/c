@@ -126,7 +126,7 @@ export const openaiRouter = createTRPCRouter({
                 accum = chunks[chunks.length - 1] ?? '';
 
                 const textMessage = {
-                  text: sentences,
+                  text: sentences.trim() + ' ',
                   try_trigger_generation: true,
                 };
   
