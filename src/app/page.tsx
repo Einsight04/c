@@ -16,19 +16,42 @@ export default function Home() {
     useAudioRecorder();
   const [transcription, setTranscription] = useState<string | null>(null);
   const deepgram = api.transcribe.transcribe.useMutation();
+  const sendTextAndImages = api.openai.sendTextAndImages.useMutation();
+  const [counter, setCounter] = useState(0);
 
-  async function transcribeAudio() {
-    const buff = Buffer.from(await audioBlob!!.arrayBuffer());
-    
-    const { result } = await deepgram.mutateAsync(buff.toString('base64'));
-    setTranscription(result);
-  }
+  api.openai.streamAudio.useSubscription(undefined, {
+    onData: (data) => {
+      setCounter((prev) => prev + 1);
+      console.log(counter);
+      // console.log(data.chunk);
+    },
+    onError: (err) => {
+      console.error(err);
+    },
+    onStarted() {
+      console.log("stream started");
+    },
+  });
 
-  useEffect(() => {
-    if (recording === false && audioBlob) {
-      transcribeAudio();
-    }
-  }, [audioBlob]);
+  const testEndToEndShitMinusDeepgram = async () => {
+    await sendTextAndImages.mutateAsync({
+      text: "hello world",
+      images: [],
+    });
+  };
+
+  // async function transcribeAudio() {
+  //   const buff = Buffer.from(await audioBlob!!.arrayBuffer());
+
+  //   const { result } = await deepgram.mutateAsync(buff.toString("base64"));
+  //   setTranscription(result);
+  // }
+
+  // useEffect(() => {
+  //   if (recording === false && audioBlob) {
+  //     transcribeAudio();
+  //   }
+  // }, [audioBlob]);
 
   return (
     <div style={{ padding: "20px", textAlign: "center" }}>
@@ -48,6 +71,7 @@ export default function Home() {
       >
         {recording ? "Recording... Release to stop" : "Hold to record"}
       </button>
+      <button onClick={testEndToEndShitMinusDeepgram}>Test</button>
       {audioUrl && (
         <div>
           <p>Recording Complete:</p>
