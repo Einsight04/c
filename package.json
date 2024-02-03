@@ -7,9 +7,13 @@
     "build": "next build",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
+<<<<<<< HEAD
     "dev:ws": "tsx watch src/server/api/ws-server.ts --tsconfig tsconfig.server.json",
     "dev:next": "next dev",
     "dev": "run-p dev:*",
+=======
+    "dev": "bun run src/server",
+>>>>>>> 66d1421d5e385a5986a4d63f0e497dc48fd528b2
     "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start"
@@ -24,6 +28,8 @@
     "@trpc/next": "^10.43.6",
     "@trpc/react-query": "^10.43.6",
     "@trpc/server": "^10.43.6",
+    "@types/express": "^4.17.21",
+    "express": "^4.18.2",
     "next": "^14.0.4",
     "openai": "^4.26.0",
     "react": "18.2.0",
