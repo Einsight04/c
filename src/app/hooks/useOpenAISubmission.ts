@@ -10,7 +10,7 @@ type Base64Image = {
 export const useOpenAISubmission = () => {
   const sendTextAndImages = api.openai.sendTextAndImages.useMutation();
 
-  const [text, setText] = useState<string>("do you see the image");
+  const [audio, setAudio] = useState<string>("do you see the image");
   const [images, setImages] = useState<Base64Image[]>([]);
   const [response, setResponse] =
     useState<RouterOutputs["openai"]["sendTextAndImages"]>();
@@ -18,15 +18,15 @@ export const useOpenAISubmission = () => {
   const [error, setError] = useState<string | null>(null);
 
   const clearAll = useCallback(() => {
-    setText("");
+    setAudio("");
     setImages([]);
     setResponse();
     setLoading(false);
     setError(null);
   }, []);
 
-  const clearText = useCallback(() => {
-    setText("");
+  const clearAudio = useCallback(() => {
+    setAudio("");
   }, []);
 
   const clearImages = useCallback(() => {
@@ -42,7 +42,7 @@ export const useOpenAISubmission = () => {
   }, []);
 
   const setTextContent = useCallback((textContent: string) => {
-    setText(textContent);
+    setAudio(textContent);
   }, []);
 
   const submitToOpenAI = useCallback(async () => {
@@ -51,8 +51,8 @@ export const useOpenAISubmission = () => {
 
     try {
       const response = await sendTextAndImages.mutateAsync({
-        text,
-        images: images.map(({ data }) => data), // Why are we passing in the old images??? Remove mapping for single image
+        audioBase64: audio,
+        imagesBase64: images.map(({ data }) => data), // Why are we passing in the old images??? Remove mapping for single image
       });
       setResponse(response);
     } catch (error) {
@@ -61,11 +61,11 @@ export const useOpenAISubmission = () => {
     } finally {
       setLoading(false);
     }
-  }, [sendTextAndImages, text, images]);
+  }, [sendTextAndImages, audio, images]);
 
   return {
     clearAll,
-    clearText,
+    clearAudio,
     clearImages,
     addImage,
     setTextContent,
