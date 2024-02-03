@@ -1,6 +1,9 @@
 import { OpenAI } from "openai";
 import { env } from "~/env";
 
-export const openai = new OpenAI({
-  apiKey: env.OPEN_AI_KEY,
-});
+const global = globalThis as unknown as {
+  openai: OpenAI | undefined;
+};
+
+export const openai = global.openai ?? new OpenAI({ apiKey: env.OPEN_AI_KEY });
+global.openai = openai;
