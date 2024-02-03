@@ -9,7 +9,6 @@ import { transcribeRouter } from "./routers/transcribe";
  */
 export const appRouter = createTRPCRouter({
   openai: openaiRouter,
-  transcribe: transcribeRouter,
 });
 
 // export type definition of API

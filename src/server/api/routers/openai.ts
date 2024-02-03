@@ -6,10 +6,7 @@ import { observable } from "@trpc/server/observable";
 import { type AudioData } from "~/types/elevenlabs";
 import { env } from "~/env";
 import { WebSocket } from "ws";
-
-const voiceId = "21m00Tcm4TlvDq8ikWAM"; // replace with your voice_id
-const model = "eleven_monolingual_v1";
-const wsUrl = `wss://api.elevenlabs.io/v1/text-to-speech/${voiceId}/stream-input?model_id=${model}`;
+import { voiceId, model, wsUrl } from "~/server/services/elevenlabs";
 
 // create a global event emitter (could be replaced by redis, etc)
 const ee = new EventEmitter();
