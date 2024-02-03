@@ -114,19 +114,26 @@ export const openaiRouter = createTRPCRouter({
 
           socket.send(JSON.stringify(bosMessage));
 
+          const sentenceBreaks = [".", "!", "?"];
+          let accum = '';
           for await (const message of response) {
             const chunk = message.choices[0]?.delta.content ?? null;
 
-            // 3. Send the input text message
             if (chunk) {
-              contentChunks.push(chunk);
+              if (sentenceBreaks.some(punctuation => chunk.endsWith(punctuation) || chunk.includes(punctuation + ' '))) {
+                const chunks = chunk.split(/(?<=[.!?])(?=\s|$)/);
+                const sentences = accum + chunks.slice(0, -1);
+                accum = chunks[chunks.length - 1] ?? '';
 
-              const textMessage = {
-                text: chunk,
-                try_trigger_generation: true,
-              };
-
-              socket.send(JSON.stringify(textMessage));
+                const textMessage = {
+                  text: sentences,
+                  try_trigger_generation: true,
+                };
+  
+                socket.send(JSON.stringify(textMessage));
+              } else {
+                accum += chunk;
+              }
             }
           }
 
