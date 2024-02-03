@@ -50,9 +50,14 @@ export const openaiRouter = createTRPCRouter({
         stream: true,
       });
 
+      const contentChunks: string[] = [];
+
       for await (const message of response) {
         const chunk = message.choices[0]?.delta.content ?? null;
         ee.emit("contentChunk", chunk);
+        contentChunks.push(chunk ?? "");
       }
+
+      return { message: contentChunks.join("") };
     }),
 });
