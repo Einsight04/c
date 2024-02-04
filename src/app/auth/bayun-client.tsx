@@ -6,6 +6,7 @@ import "./bayun.js";
 interface BayunContextType {
   sessionId: string;
   isSignedIn: boolean;
+  isLoading: boolean;
   signOut: () => void;
   signIn: (username: string, password: string) => void;
 }
@@ -19,12 +20,14 @@ const AuthContext = createContext<BayunContextType | undefined>(undefined);
 const BayunProvider = ({ children }: BayunProviderProps) => {
   const [sessionId, setSessionId] = useState<string>("");
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const savedSessionId = localStorage.getItem("bayunSessionId");
     if (savedSessionId) {
       setSessionId(savedSessionId);
       setIsSignedIn(true);
+      setIsLoading(false);
     }
   }, []);
 
@@ -68,6 +71,7 @@ const BayunProvider = ({ children }: BayunProviderProps) => {
       value={{
         sessionId,
         isSignedIn,
+        isLoading,
         signIn,
         signOut,
       }}

@@ -30,7 +30,7 @@ const ContinuousCapturePage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { isSignedIn } = useBayun();
+  const { isSignedIn, isLoading } = useBayun();
   const router = useRouter();
 
   const geoControlRef = useRef<mapboxgl.GeolocateControl>(null);
@@ -184,6 +184,10 @@ const ContinuousCapturePage = () => {
     return () => clearInterval(imageCaptureInterval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
