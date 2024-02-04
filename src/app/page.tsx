@@ -130,6 +130,12 @@ const ContinuousCapturePage = () => {
     if (audioChunk === null) return;
     isPlayingRef.current = true;
 
+    // TODO: THIS SHIT MIGHT BE WRONG
+    if (!audioChunk) {
+      console.error("Audio chunk is undefined or null.");
+      return;
+    }
+
     const response = await fetch(`data:audio/mp3;base64,${audioChunk}`);
     const arrayBuffer = await response.arrayBuffer();
     console.log("ARRAY BUFFER", arrayBuffer);
@@ -224,6 +230,9 @@ const ContinuousCapturePage = () => {
           onMouseUp={stopRecording}
           onTouchStart={startRecording}
           onTouchEnd={stopRecording}
+          style={{
+            backgroundColor: recording ? "#1f2937" : "#030712",
+          }}
         >
           <FaMicrophone
             className="mr-2 h-6 w-6" // Adjust the size as necessary
