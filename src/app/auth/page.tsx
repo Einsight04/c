@@ -9,12 +9,14 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useBayun } from "./bayun-client";
+import { useState } from "react";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function SignIn() {
+  const [spinner, setSpinner] = useState(false);
   const router = useRouter();
   const {
     register,
@@ -32,9 +34,9 @@ export default function SignIn() {
   const bayun = useBayun();
 
   async function handleBayunLogin(username: string, password: string) {
+    setSpinner(true);
     bayun.signIn(username, password);
-
-    router.push("/");
+    setTimeout(() => router.push("/"), 2000);
   }
 
   return (
@@ -73,20 +75,20 @@ export default function SignIn() {
                     type="text"
                     placeholder="Username"
                     className={classNames(
-                      "block w-full appearance-none rounded-md px-3 py-2 outline-none placeholder-gray-400 shadow-sm sm:text-sm",
+                      "block w-full appearance-none rounded-md px-3 py-2 placeholder-gray-400 shadow-sm outline-none sm:text-sm",
                       errors.username
                         ? "border-2 border-red-300 placeholder-red-300 focus:border-red-500"
-                        : "border-2 border-gray-300 placeholder-gray-500 focus:border-indigo-500"
+                        : "border-2 border-gray-300 placeholder-gray-500 focus:border-indigo-500",
                     )}
                   />
                   {errors.username && (
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                          <ExclamationCircleIcon
-                            className="h-5 w-5 text-red-500"
-                            aria-hidden="true"
-                          />
-                        </div>
-                      )}
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                      <ExclamationCircleIcon
+                        className="h-5 w-5 text-red-500"
+                        aria-hidden="true"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="block sm:col-span-6">
@@ -110,10 +112,10 @@ export default function SignIn() {
                     placeholder="Password"
                     type="password"
                     className={classNames(
-                      "block w-full appearance-none rounded-md px-3 py-2 outline-none placeholder-gray-400 shadow-sm sm:text-sm",
+                      "block w-full appearance-none rounded-md px-3 py-2 placeholder-gray-400 shadow-sm outline-none sm:text-sm",
                       errors.password
                         ? "border-2 border-red-300 placeholder-red-300 focus:border-red-500"
-                        : "border-2 border-gray-300 placeholder-gray-500 focus:border-indigo-500"
+                        : "border-2 border-gray-300 placeholder-gray-500 focus:border-indigo-500",
                     )}
                   />
                   {errors.password && (
@@ -137,9 +139,6 @@ export default function SignIn() {
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                   <LockClosedIcon
                     className={classNames(
-                      // isSubmitting || !isValid
-                      //   ? "text-white"
-                      //   : "text-indigo-500 group-hover:text-indigo-400",
                       "h-5 w-5",
                     )}
                     aria-hidden="true"
@@ -148,13 +147,6 @@ export default function SignIn() {
                 Sign in
               </button>
             </div>
-            {/* {error && (
-                  <div className="flex items-center justify-center">
-                    <p className="text-xs font-medium uppercase tracking-wider text-red-600">
-                      {errorMessage}
-                    </p>
-                  </div>
-                )} */}
           </form>
         </div>
       </div>
