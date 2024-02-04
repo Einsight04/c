@@ -16,7 +16,7 @@ export const openaiRouter = createTRPCRouter({
     return observable<{ chunk: string }>((emit) => {
       const listener = (chunk: string) => {
         emit.next({ chunk });
-        console.log("Received audio chunk", chunk);
+        //console.log("Received audio chunk", chunk);
       };
 
       ee.on("audioChunk", listener);
@@ -130,6 +130,8 @@ When describing the camera image, respond in a short passive way. Don't refer to
                 const chunks = chunk.split(/(?<=[.!?])(?=\s|$)/);
                 const sentences = accum + chunks.slice(0, -1).join("");
                 accum = chunks[chunks.length - 1] ?? "";
+
+                console.log(`sending chunk: "${sentences.trim() + " "}" (${chunk}) (${chunk}) (${chunks})`)
 
                 const textMessage = {
                   text: sentences.trim() + " ",
