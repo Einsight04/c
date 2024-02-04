@@ -1,7 +1,8 @@
 "use client";
 
-import React, { createContext, useState, useEffect } from "react";
 import "./bayun.js";
+import React, { createContext, useState, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
 
 interface BayunContextType {
   sessionId: string;
@@ -18,6 +19,9 @@ interface BayunProviderProps {
 const AuthContext = createContext<BayunContextType | undefined>(undefined);
 
 const BayunProvider = ({ children }: BayunProviderProps) => {
+  const router = useRouter();
+  const pathname = usePathname();
+
   const [sessionId, setSessionId] = useState<string>("");
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -28,11 +32,13 @@ const BayunProvider = ({ children }: BayunProviderProps) => {
       setSessionId(savedSessionId);
       setIsSignedIn(true);
       setIsLoading(false);
+    } else {
+      if (pathname !== "/auth") {
+        router.push("/auth");
+        setIsSignedIn(false);
+        setIsLoading(false);
+      }
     }
-
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
   }, []);
 
   const BayunCore = (window as any).BayunCore;
@@ -58,6 +64,8 @@ const BayunProvider = ({ children }: BayunProviderProps) => {
         localStorage.setItem("bayunSessionId", sessionId);
         setSessionId(sessionId);
         setIsSignedIn(true);
+        router.push('/')
+        // setTimeout(() => router.push("/"), 1000);
       },
       (err: any) => console.error("bayun login error", err),
     );

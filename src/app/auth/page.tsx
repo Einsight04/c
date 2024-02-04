@@ -36,7 +36,6 @@ export default function SignIn() {
   async function handleBayunLogin(username: string, password: string) {
     setSpinner(true);
     bayun.signIn(username, password);
-    setTimeout(() => router.push("/"), 2000);
   }
 
   return (
