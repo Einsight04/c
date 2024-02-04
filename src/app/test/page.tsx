@@ -45,7 +45,7 @@ const ContinuousCapturePage = () => {
     try {
       await sendTextAndImages.mutateAsync({
         audioBase64: audio,
-        imagesBase64: images.map(({ data }) => data),
+        imagesBase64: images.slice(-2).map(({ data }) => data),
       });
     } catch (error) {
       console.error("Error submitting to OpenAI:", error);
@@ -144,7 +144,7 @@ const ContinuousCapturePage = () => {
       if (dataUrl) addImage(dataUrl);
     };
 
-    const imageCaptureInterval = setInterval(handleImage, 1000);
+    const imageCaptureInterval = setInterval(handleImage, 2000);
 
     return () => clearInterval(imageCaptureInterval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
