@@ -71,6 +71,7 @@ export const openaiRouter = createTRPCRouter({
       );
 
       const content = [...possiblePrompt, ...imageContents];
+      console.log(content);
 
       const response = await ctx.openai.chat.completions.create({
         // model: "gpt-4-vision-preview",
@@ -108,7 +109,6 @@ When describing the camera image, respond in a short passive way. Don't refer to
 
           socket.send(JSON.stringify(bosMessage));
 
-          const sentenceBreaks = [".", "!", "?"];
           let accum = "";
           for await (const message of response) {
             const chunk = message.choices[0]?.delta.content ?? null;
@@ -120,28 +120,22 @@ When describing the camera image, respond in a short passive way. Don't refer to
             }
 
             if (chunk) {
-              if (
-                sentenceBreaks.some(
-                  (punctuation) =>
-                    chunk.endsWith(punctuation) ||
-                    chunk.includes(punctuation + " "),
-                )
-              ) {
-                const chunks = chunk.split(/(?<=[.!?])(?=\s|$)/);
-                const sentences = accum + chunks.slice(0, -1).join("");
-                accum = chunks[chunks.length - 1] ?? "";
-
-                console.log(`sending chunk: "${sentences.trim() + " "}" (${chunk}) (${chunk}) (${chunks})`)
+              accum += chunk;
+              const chunks = accum.split(/(?<=[.!?])(?=\s|$)/);
+              if (chunks.length > 1) {
+                const sentence = chunks[0]!;
+                accum = chunks.slice(1).join('');
+                console.log(`sending chunk: "${sentence.trim() + " "}" (${chunk}) (${sentence}) (${chunks})`)
 
                 const textMessage = {
-                  text: sentences.trim() + " ",
+                  text: sentence.trim() + " ",
                   try_trigger_generation: true,
                 };
 
                 socket.send(JSON.stringify(textMessage));
-              } else {
-                accum += chunk;
               }
+
+
             }
           }
 
