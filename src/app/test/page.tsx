@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import useAudioRecorder from "~/app/hooks/useAudioRecorder";
 import useCameraRecorder from "~/app/hooks/useCameraRecorder";
 import { useOpenAISubmission } from "~/app/hooks/useOpenAISubmission";
@@ -13,37 +13,52 @@ const ContinuousCapturePage = () => {
   const { addImage, setAudioContent, submitToOpenAI, clearAll } =
     useOpenAISubmission();
 
+  const audioContextRef = useRef<AudioContext | null>(null);
+
+  // // Subscription to the streamAudio endpoint
+  // api.openai.streamAudio.useSubscription(undefined, {
+  //   onData: (data) => {
+  //     // these are base64 encoded audio chunks
+  //     console.log(data.chunk);
+  //   },
+  //   onError: (error) => {
+  //     console.error("Error receiving audio chunk: ", error);
+  //   },
+  // });
+
+  useEffect(() => {
+    // Initialize AudioContext
+    audioContextRef.current = new (window.AudioContext ||
+      window.webkitAudioContext)();
+
+    // Ensure audio context is resumed after user interaction, as some browsers
+    // require user interaction to play audio
+    const resumeAudioContext = () => {
+      audioContextRef.current?.resume();
+    };
+
+    window.addEventListener("click", resumeAudioContext);
+    return () => window.removeEventListener("click", resumeAudioContext);
+  }, []);
+
   // Subscription to the streamAudio endpoint
   api.openai.streamAudio.useSubscription(undefined, {
-    onData: (data) => {
-      // Assuming data.chunk is a base64-encoded audio string
-      // convert from base64 to a Blob
-      console.log(data.chunk);
-      // const binary = atob(data.chunk);
-
-      // const byteArr = new Uint8Array(binary.length);
-      // for (let i = 0; i < binary.length; i++) {
-      //   byteArr[i] = binary.charCodeAt(i);
-      // }
-
-      // const audioBlob = new Blob([byteArr], { type: "audio/mp3" });
-      // const audioUrl = URL.createObjectURL(audioBlob);
-      // console.log(audioUrl);
-
-      //   const audioElement = new Audio(audioUrl);
-      //   audioElement
-      //     .play()
-      //     .then(() => {
-      //       // Audio playback started
-      //     })
-      //     .catch((error) => {
-      //       console.error("Error playing audio:", error);
-      //     });
-
-      //   // Optional: Revoke the Object URL to free up resources once it's no longer needed
-      //   audioElement.onended = () => {
-      //     URL.revokeObjectURL(audioUrl);
-      //   };
+    onData: async (data) => {
+      if (!audioContextRef.current) return;
+      const audioChunk = data.chunk; // Base64 encoded audio chunk
+      const arrayBuffer = await fetch(
+        `data:audio/mp3;base64,${audioChunk}`,
+      ).then((res) => res.arrayBuffer());
+      audioContextRef.current.decodeAudioData(
+        arrayBuffer,
+        (audioBuffer) => {
+          const source = audioContextRef.current!.createBufferSource();
+          source.buffer = audioBuffer;
+          source.connect(audioContextRef.current!.destination);
+          source.start();
+        },
+        (e) => console.error("Error decoding audio data", e),
+      );
     },
     onError: (error) => {
       console.error("Error receiving audio chunk: ", error);
@@ -52,38 +67,34 @@ const ContinuousCapturePage = () => {
 
   const handleImage = () => {
     const dataUrl = captureImage();
-    if (dataUrl != undefined) {
-      addImage(dataUrl);
-    } else {
-      console.log("dataUrl is undefined");
-    }
+    if (dataUrl) addImage(dataUrl);
   };
-
-  const onAudioButtonRelease = async () => {
-    stopRecording();
-
-    if (audioBlob) {
-      console.log("audioBlob is not undefined");
-      const buffer = Buffer.from(await audioBlob.arrayBuffer());
-      const base64 = buffer.toString("base64");
-      setAudioContent(base64);
-    }
-  };
-
-  useEffect(() => {
-    const captureInterval = setInterval(handleImage, 5000);
-    return () => clearInterval(captureInterval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const sendToOpenAI = async () => {
     await submitToOpenAI();
     clearAll();
   };
 
+  const onAudioButtonRelease = async () => {
+    stopRecording();
+
+    if (audioBlob) {
+      const buffer = Buffer.from(await audioBlob.arrayBuffer());
+      const base64Audio = buffer.toString("base64");
+
+      setAudioContent(base64Audio);
+    }
+  };
+
   useEffect(() => {
-    const submitInterval = setInterval(() => void sendToOpenAI(), 10000);
-    return () => clearInterval(submitInterval);
+    const imageCaptureInterval = setInterval(handleImage, 5000);
+    return () => clearInterval(imageCaptureInterval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const apiSubmissionInterval = setInterval(() => void sendToOpenAI(), 10000);
+    return () => clearInterval(apiSubmissionInterval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
