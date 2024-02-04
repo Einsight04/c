@@ -224,7 +224,8 @@ const ContinuousCapturePage = () => {
           </Map>
         </div>
         <button
-          className="absolute bottom-[-1rem] left-0 right-0 z-10 flex h-1/3 items-center justify-center rounded-tl-3xl rounded-tr-3xl bg-gray-950 p-4 text-2xl text-white"
+          className="absolute bottom-[-1rem] left-0 right-0 z-10 flex h-1/3 items-center justify-center bg-gray-950 p-4 text-2xl text-white"
+          // className="flex h-1/3 items-center justify-center bg-gray-950 p-4 text-2xl text-white"
           onMouseDown={startRecording}
           onMouseUp={stopRecording}
           onTouchStart={startRecording}
