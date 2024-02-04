@@ -8,4 +8,4 @@ const geocodingService = mbxGeocoding({
 
 export const mapbox = {
   geocodingService,
-};
+}
