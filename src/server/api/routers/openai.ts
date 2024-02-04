@@ -68,21 +68,21 @@ export const openaiRouter = createTRPCRouter({
 
       const content = [...possiblePrompt
         
-        // , ...imageContents
+        , ...imageContents
       
       ];
       console.log(content);
 
       const response = await ctx.openai.chat.completions.create({
-        // model: "gpt-4-vision-preview",
-        model: "gpt-3.5-turbo-0125",
+        model: "gpt-4-vision-preview",
+        //model: "gpt-3.5-turbo-0125",
         messages: [
           {
             role: "system",
             content:
               `You are acting as the eyes for a blind person. Images from their camera will be provided, and your job is to act as if you're there and describe IMPORTANT things they can see. Don't describe a garbage can off to the side unless they specifically ask about it. It's important you also warn them about potentially hazards, such as walls, water, holes, tripping hazards, etc, as they are BLIND and cannot SEE. If you do not warn them, they might get seriously injured! Be sure to stray on the side of caution when it comes to warning them.
 The blind person may also provide a query alongside the camera image, which you should answer using the information in the image. Be sure to still warn them about hazards in the image! 
-When describing the camera image, respond in a short passive way. Don't refer to the image directly, like "The image shows ...", instead say "There is a ... in front of you". Make sure your responses are short and straight to the point. Do not exceed 2 sentence responses!
+When describing the camera image, respond in a short passive way. Don't refer to the image directly, like "The image shows ...", instead say "There is a ...". Make sure your responses are short and straight to the point. Do not exceed 2 sentence responses!
 `.trim(),
           },
           {
@@ -143,9 +143,15 @@ When describing the camera image, respond in a short passive way. Don't refer to
 
           if (accum) {
             const textMessage = {
-              text: accum,
+              text: accum.trim() + " ",
               try_trigger_generation: true,
             };
+
+            console.log(
+              `sending final chunk: "${
+                accum.trim() + " "
+              }"`,
+            );
 
             socket.send(JSON.stringify(textMessage));
           }
