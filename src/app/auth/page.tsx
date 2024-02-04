@@ -6,14 +6,9 @@ import {
   LockClosedIcon,
 } from "@heroicons/react/24/outline";
 import { useRouter } from "next/navigation";
-import type { ReactElement } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useBayun } from "./bayun-client";
-
-const errorMap: Record<string, string> = {
-  CredentialsSignin: "Invalid username or password",
-};
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
