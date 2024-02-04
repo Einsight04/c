@@ -5,6 +5,9 @@ import { Inter } from "next/font/google";
 import { TRPCReactProvider } from "~/trpc/react";
 
 import { UserProvider } from "@auth0/nextjs-auth0/client";
+import { lazy } from "react";
+// import { BayunProvider } from './auth/bayun-client';
+const BayunProvider = lazy(() => import('./auth/bayun-client'));
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,8 +28,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans ${inter.variable}`}>
+
         <TRPCReactProvider>
-          <UserProvider>{children}</UserProvider>
+          <BayunProvider>{children}</BayunProvider>
         </TRPCReactProvider>
       </body>
     </html>
