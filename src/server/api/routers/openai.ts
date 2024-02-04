@@ -36,6 +36,10 @@ export const openaiRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      console.log(
+        "======================================= " + input.audioBase64,
+      );
+
       let possibleText = "";
 
       if (input.audioBase64) {
