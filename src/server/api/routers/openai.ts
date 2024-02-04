@@ -88,6 +88,7 @@ When describing the camera image, respond in a short passive way. Don't refer to
           },
         ],
         stream: true,
+        max_tokens: 1000
       });
 
       const socket = new WebSocket(wsUrl);
