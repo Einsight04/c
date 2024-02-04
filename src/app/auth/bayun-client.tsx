@@ -4,7 +4,7 @@ import "./bayun.js";
 
 interface BayunContextType {
   sessionId: string;
-  isSignedIn: () => boolean;
+  isSignedIn: boolean;
   signOut: () => void;
   signIn: (username: string, password: string) => void;
 }
