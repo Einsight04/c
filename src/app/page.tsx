@@ -181,7 +181,7 @@ const ContinuousCapturePage = () => {
       if (dataUrl) addImage(dataUrl);
     };
 
-    const imageCaptureInterval = setInterval(handleImage, 1000);
+    const imageCaptureInterval = setInterval(handleImage, 2000);
 
     return () => clearInterval(imageCaptureInterval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
