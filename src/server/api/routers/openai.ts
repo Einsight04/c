@@ -62,8 +62,7 @@ export const openaiRouter = createTRPCRouter({
         (base64Image) =>
           ({
             type: "image_url",
-            image_url: { url: base64Image }, // Assuming JPEG format
-            detail: "low",
+            image_url: { url: base64Image, detail: "low" }, // Assuming JPEG format
           }) as const,
       );
 
