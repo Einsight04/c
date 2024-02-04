@@ -6,6 +6,6 @@ const geocodingService = mbxGeocoding({
   accessToken: env.NEXT_PUBLIC_MAPBOX_API_KEY,
 });
 
-geocodingService.forwardGeocode({
-  query: { lng: -122.42, lat: 37.78 },
-});
+export const mapbox = {
+  geocodingService,
+};
