@@ -8,7 +8,7 @@ import { api } from "~/trpc/react";
 import useAudioRecorder from "./hooks/useAudioRecorder";
 import { createClient } from "@deepgram/sdk";
 
-import mapboxgl from '!mapbox-gl';
+import mapboxgl from 'mapbox-gl';
 import { env } from '~/env';
 
 mapboxgl.accessToken = env.NEXT_PUBLIC_MAPBOX_API_KEY;
