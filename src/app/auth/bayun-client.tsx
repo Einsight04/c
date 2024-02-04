@@ -29,6 +29,10 @@ const BayunProvider = ({ children }: BayunProviderProps) => {
       setIsSignedIn(true);
       setIsLoading(false);
     }
+
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
   }, []);
 
   const BayunCore = (window as any).BayunCore;
