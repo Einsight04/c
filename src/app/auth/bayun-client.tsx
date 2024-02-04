@@ -1,5 +1,6 @@
 "use client";
-import React, { createContext, useState } from "react";
+
+import React, { createContext, useState, useEffect } from "react";
 import "./bayun.js";
 
 interface BayunContextType {
@@ -17,7 +18,15 @@ const AuthContext = createContext<BayunContextType | undefined>(undefined);
 
 const BayunProvider = ({ children }: BayunProviderProps) => {
   const [sessionId, setSessionId] = useState<string>("");
-  const [isSignedIn, setIsSignedIn] = useState<boolean>(sessionId !== "");
+  const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
+
+  useEffect(() => {
+    const savedSessionId = localStorage.getItem("bayunSessionId");
+    if (savedSessionId) {
+      setSessionId(savedSessionId);
+      setIsSignedIn(true);
+    }
+  }, []);
 
   const BayunCore = (window as any).BayunCore;
   const bayunClient = BayunCore.init(
@@ -39,6 +48,7 @@ const BayunProvider = ({ children }: BayunProviderProps) => {
       () => {},
       () => {},
       ({ sessionId }: { sessionId: string }) => {
+        localStorage.setItem("bayunSessionId", sessionId);
         setSessionId(sessionId);
         setIsSignedIn(true);
       },
@@ -48,7 +58,9 @@ const BayunProvider = ({ children }: BayunProviderProps) => {
 
   const signOut = () => {
     bayunClient.logout(sessionId);
+    localStorage.removeItem("bayunSessionId");
     setIsSignedIn(false);
+    setSessionId("");
   };
 
   return (

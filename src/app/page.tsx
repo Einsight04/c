@@ -30,8 +30,6 @@ const ContinuousCapturePage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  noStore();
-
   const { isSignedIn } = useBayun();
   const router = useRouter();
 
@@ -72,7 +70,7 @@ const ContinuousCapturePage = () => {
       id: Date.now().toString(),
       data: base64Data,
     };
-    setImages((currentImages) => [...currentImages.slice(-1), newImage]);  
+    setImages((currentImages) => [...currentImages.slice(-1), newImage]);
   };
 
   const submitToOpenAI = async () => {
