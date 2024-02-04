@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 
 type UseAudioRecorderReturn = {
+  clearAudio: () => void;
   recording: boolean;
   audioUrl: string;
   audioBlob: Blob | null;
@@ -35,7 +36,7 @@ const useAudioRecorder = (): UseAudioRecorderReturn => {
           if (audioBlob.size > 0) {
             console.log(`THERE IS A BLOB HERE 2`);
           } else {
-            console.log(`THERE IS NO BLOB HERE 2 FUCK FUCK FUCK`); 
+            console.log(`THERE IS NO BLOB HERE 2 FUCK FUCK FUCK`);
           }
           setAudioBlob(audioBlob);
         };
@@ -53,7 +54,14 @@ const useAudioRecorder = (): UseAudioRecorderReturn => {
     mediaRecorder?.stream.getTracks().forEach((track) => track.stop());
   }, [mediaRecorder]);
 
+  const clearAudio = useCallback(() => {
+    setRecording(false);
+    setAudioUrl("");
+    setAudioBlob(null);
+  }, []);
+
   return {
+    clearAudio,
     recording,
     audioUrl,
     audioBlob,

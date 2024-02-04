@@ -32,28 +32,38 @@ const ContinuousCapturePage = () => {
   }, []);
 
   // Subscription to the streamAudio endpoint
-//   api.openai.streamAudio.useSubscription(undefined, {
-//     onData: async (data) => {
-//       if (!audioContextRef.current) return;
-//       const audioChunk = data.chunk; // Base64 encoded audio chunk
-//       const arrayBuffer = await fetch(
-//         `data:audio/mp3;base64,${audioChunk}`,
-//       ).then((res) => res.arrayBuffer());
-//       audioContextRef.current.decodeAudioData(
-//         arrayBuffer,
-//         (audioBuffer) => {
-//           const source = audioContextRef.current!.createBufferSource();
-//           source.buffer = audioBuffer;
-//           source.connect(audioContextRef.current!.destination);
-//           source.start();
-//         },
-//         (e) => console.error("Error decoding audio data", e),
-//       );
-//     },
-//     onError: (error) => {
-//       console.error("Error receiving audio chunk: ", error);
-//     },
-//   });
+  api.openai.streamAudio.useSubscription(undefined, {
+    onData: (data) => {
+      const doStuff = async () => {
+        if (!audioContextRef.current) return;
+
+        const audioChunk = data.chunk;
+        const response = await fetch(`data:audio/mp3;base64,${audioChunk}`);
+        const arrayBuffer = await response.arrayBuffer();
+
+        await audioContextRef.current.decodeAudioData(
+          arrayBuffer,
+          (audioBuffer) => {
+            if (audioContextRef.current) {
+              const source = audioContextRef.current.createBufferSource();
+
+              if (source) {
+                source.buffer = audioBuffer;
+                source.connect(audioContextRef.current.destination);
+                source.start();
+              }
+            }
+          },
+          (err) => console.error("Error decoding audio data", err),
+        );
+      };
+
+      void doStuff();
+    },
+    onError: (error) => {
+      console.error("Error receiving audio chunk: ", error);
+    },
+  });
 
   const handleImage = () => {
     const dataUrl = captureImage();
@@ -66,32 +76,28 @@ const ContinuousCapturePage = () => {
   };
 
   useEffect(() => {
-  if (audioBlob) {
-    // Logic to handle audioBlob
-    const t = async () => {
-        if (audioBlob.size > 0){
-            console.log("do we have a blob?")
-        }
-        const buffer = Buffer.from(await audioBlob.arrayBuffer());
-        const base64Audio = buffer.toString("base64");
-        setAudioContent(base64Audio);
-    }
-    void t();
-  }
-}, [audioBlob]);
+    const setAudio = async () => {
+      if (!audioBlob) return;
 
+      const buffer = Buffer.from(await audioBlob.arrayBuffer());
+      const base64Audio = buffer.toString("base64");
+      setAudioContent(base64Audio);
+    };
 
-    useEffect(() => {
-      const imageCaptureInterval = setInterval(handleImage, 10000);
-      return () => clearInterval(imageCaptureInterval);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    void setAudio();
+  }, [audioBlob, setAudioContent]);
 
-  //   useEffect(() => {
-  //     const apiSubmissionInterval = setInterval(() => void sendToOpenAI(), 10000);
-  //     return () => clearInterval(apiSubmissionInterval);
-  //     // eslint-disable-next-line react-hooks/exhaustive-deps
-  //   }, []);
+  useEffect(() => {
+    const imageCaptureInterval = setInterval(handleImage, 10000);
+    return () => clearInterval(imageCaptureInterval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const apiSubmissionInterval = setInterval(() => void sendToOpenAI(), 10000);
+    return () => clearInterval(apiSubmissionInterval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div>
@@ -129,10 +135,9 @@ const ContinuousCapturePage = () => {
             border: "none",
             borderRadius: "5px",
           }}
-        > 
-        {" Send to OpenAI "}
+        >
+          {" Send to OpenAI "}
         </button>
-
       </div>
       {audioBlob && (
         <div>
