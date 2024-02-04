@@ -37,11 +37,6 @@ const ContinuousCapturePage = () => {
   const [isMapLoaded, setIsMapLoaded] = useState(false);
 
   useEffect(() => {
-    if (!isSignedIn) router.push("/auth");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
     if (isMapLoaded) {
       setTimeout(() => {
         if (geoControlRef.current) {
@@ -193,6 +188,10 @@ const ContinuousCapturePage = () => {
 
   if (isLoading) {
     return <div>Loading...</div>;
+  }
+
+  if (!isSignedIn) {
+    router.push("/auth");
   }
 
   return (
