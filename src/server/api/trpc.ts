@@ -15,6 +15,7 @@ import { ZodError } from "zod";
 import { db } from "~/server/db";
 import { deepgram } from "../services/deepgram";
 import { openai } from "../services/openai";
+import { mapbox } from "../services/mapbox";
 
 /**
  * 1. CONTEXT
@@ -35,6 +36,7 @@ export const createTRPCContext = async (
     db,
     openai,
     deepgram,
+    mapbox,
     ...opts,
   };
 };
