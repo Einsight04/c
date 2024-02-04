@@ -147,7 +147,11 @@ const ContinuousCapturePage = () => {
           playNextChunk(); // Play the next audio chunk after the current one finishes
         };
       },
-      (err) => console.error("Error with decoding audio data", err),
+      (err) => 
+      {
+        console.error("Error with decoding audio data", err);
+        isPlayingRef.current = false;
+      }
     );
   };
 
