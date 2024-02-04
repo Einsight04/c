@@ -30,8 +30,6 @@ const ContinuousCapturePage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  noStore();
-
   const { isSignedIn } = useBayun();
   const router = useRouter();
 
@@ -130,6 +128,7 @@ const ContinuousCapturePage = () => {
 
     const audioChunk = audioQueue.current.shift();
     if (audioChunk === null) return;
+    isPlayingRef.current = true;
 
     // TODO: THIS SHIT MIGHT BE WRONG
     if (!audioChunk) {
@@ -141,7 +140,6 @@ const ContinuousCapturePage = () => {
     const arrayBuffer = await response.arrayBuffer();
     console.log("ARRAY BUFFER", arrayBuffer);
 
-    isPlayingRef.current = true;
     audioContextRef.current.decodeAudioData(
       arrayBuffer,
       (audioBuffer) => {
@@ -187,7 +185,7 @@ const ContinuousCapturePage = () => {
       if (dataUrl) addImage(dataUrl);
     };
 
-    const imageCaptureInterval = setInterval(handleImage, 1000);
+    const imageCaptureInterval = setInterval(handleImage, 2000);
 
     return () => clearInterval(imageCaptureInterval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
