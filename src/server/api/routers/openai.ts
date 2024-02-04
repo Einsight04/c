@@ -119,7 +119,7 @@ When describing the camera image, respond in a short passive way. Don't refer to
               break;
             }
 
-            if (chunk) {
+            if (chunk !== null) {
               accum += chunk;
               const chunks = accum.split(/(?<=[.!?])(?=\s|$)/);
               if (chunks.length > 1) {
