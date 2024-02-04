@@ -18,6 +18,11 @@ type Base64Image = {
   data: string;
 };
 
+interface Coordinates {
+  lng: number;
+  lat: number;
+}
+
 const ContinuousCapturePage = () => {
   const { videoRef, canvasRef, captureImage } = useCameraRecorder();
   const { recording, startRecording, stopRecording, audioBlob } =
@@ -35,6 +40,11 @@ const ContinuousCapturePage = () => {
 
   const geoControlRef = useRef<mapboxgl.GeolocateControl>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
+
+  const [coords, setCoords] = useState<Coordinates>({
+    lng: -122.4,
+    lat: 37.8,
+  });
 
   useEffect(() => {
     if (isMapLoaded) {
@@ -76,6 +86,7 @@ const ContinuousCapturePage = () => {
       await sendTextAndImages.mutateAsync({
         audioBase64: audio,
         imagesBase64: images.map(({ data }) => data),
+        coordinates: coords,
       });
     } catch (error) {
       console.error("Error submitting to OpenAI:", error);
@@ -147,11 +158,10 @@ const ContinuousCapturePage = () => {
           playNextChunk(); // Play the next audio chunk after the current one finishes
         };
       },
-      (err) => 
-      {
+      (err) => {
         console.error("Error with decoding audio data", err);
         isPlayingRef.current = false;
-      }
+      },
     );
   };
 
@@ -212,8 +222,8 @@ const ContinuousCapturePage = () => {
           <Map
             mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_API_KEY}
             initialViewState={{
-              longitude: -122.4,
-              latitude: 37.8,
+              longitude: coords.lng,
+              latitude: coords.lat,
               zoom: 14,
             }}
             onLoad={handleMapLoad}
@@ -224,6 +234,10 @@ const ContinuousCapturePage = () => {
               ref={geoControlRef}
               trackUserLocation={true}
               positionOptions={{ enableHighAccuracy: true }}
+              onGeolocate={(position) => {
+                const { longitude, latitude } = position.coords;
+                setCoords({ lng: longitude, lat: latitude });
+              }}
             />
           </Map>
         </div>

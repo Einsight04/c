@@ -33,6 +33,11 @@ export const openaiRouter = createTRPCRouter({
       z.object({
         audioBase64: z.optional(z.string()),
         imagesBase64: z.array(z.string()),
+        // coordinates that come as  [x, y]
+        coordinates: z.object({
+          lng: z.number(),
+          lat: z.number(),
+        }),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -71,6 +76,23 @@ export const openaiRouter = createTRPCRouter({
 
       const content = [...possiblePrompt, ...imageContents];
       console.log(content);
+
+      const results = await ctx.mapbox.geocodingService
+        .forwardGeocode({
+          query: "restaurant", // Adjust this keyword for different types of food places if necessary
+          proximity: [input.coordinates.lng, input.coordinates.lat], // Encourage results near these coordinates
+          limit: 5, // Limit the results to 5
+          types: ["poi"], // Point of interest
+          // Mapbox does not directly support a distance filter in the geocoding API request,
+          // so there's no built-in way to limit results to 5km distance.
+        })
+        .send();
+
+      const stores = results.body.features.map((feature) => ({
+        name: feature.text, // or feature.properties.name based on the API response structure
+        address: feature.place_name, // or a more detailed assembly if needed
+        coordinates: feature.geometry.coordinates,
+      }));
 
       const response = await ctx.openai.chat.completions.create({
         model: "gpt-4-vision-preview",
