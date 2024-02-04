@@ -141,6 +141,15 @@ When describing the camera image, respond in a short passive way. Don't refer to
             }
           }
 
+          if (accum) {
+            const textMessage = {
+              text: accum,
+              try_trigger_generation: true,
+            };
+
+            socket.send(JSON.stringify(textMessage));
+          }
+
           // 4. Send the EOS message with an empty string
           const eosMessage = {
             text: "",

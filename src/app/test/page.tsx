@@ -74,14 +74,14 @@ const ContinuousCapturePage = () => {
 
   useEffect(() => {
     audioContextRef.current = new (window.AudioContext ||
-      window.webkitAudioContext)();
+      window.AudioContext)();
 
     const resumeAudioContext = async () => {
       await audioContextRef.current?.resume();
     };
 
-    window.addEventListener("click", resumeAudioContext);
-    return () => window.removeEventListener("click", resumeAudioContext);
+    window.addEventListener("click", () => void resumeAudioContext());
+    return () => window.removeEventListener("click", () => void resumeAudioContext());
   }, []);
 
   const playNextChunk = async () => {
