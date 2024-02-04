@@ -11,9 +11,19 @@ import { createClient } from "@deepgram/sdk";
 
 import Map, { GeolocateControl } from "react-map-gl";
 import { env } from "~/env";
+import { useBayun } from "./auth/bayun-client";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   noStore();
+
+  const { isSignedIn } = useBayun();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isSignedIn()) router.push("/auth");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // const mapContainer = useRef<string | HTMLElement>("");
   // const map = useRef<Map | null>(null);
