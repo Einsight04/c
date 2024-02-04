@@ -27,7 +27,6 @@ export default function useCameraRecorder() {
     const accessCamera = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
           video: { facingMode: "environment" },
         });
         const video = videoRef.current;
