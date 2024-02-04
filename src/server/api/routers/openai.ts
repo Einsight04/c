@@ -16,7 +16,7 @@ export const openaiRouter = createTRPCRouter({
     return observable<{ chunk: string }>((emit) => {
       const listener = (chunk: string) => {
         emit.next({ chunk });
-        // console.log("Received audio chunk", chunk);
+        console.log("Received audio chunk", chunk);
       };
 
       ee.on("audioChunk", listener);

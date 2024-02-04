@@ -18,6 +18,32 @@ const ContinuousCapturePage = () => {
     onData: (data) => {
       // Assuming data.chunk is a base64-encoded audio string
       // convert from base64 to a Blob
+      console.log(data.chunk);
+      const binary = atob(data.chunk);
+
+      const byteArr = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        byteArr[i] = binary.charCodeAt(i);
+      }
+
+      const audioBlob = new Blob([byteArr], { type: "audio/mp3" });
+      const audioUrl = URL.createObjectURL(audioBlob);
+      console.log(audioUrl);
+
+      //   const audioElement = new Audio(audioUrl);
+      //   audioElement
+      //     .play()
+      //     .then(() => {
+      //       // Audio playback started
+      //     })
+      //     .catch((error) => {
+      //       console.error("Error playing audio:", error);
+      //     });
+
+      //   // Optional: Revoke the Object URL to free up resources once it's no longer needed
+      //   audioElement.onended = () => {
+      //     URL.revokeObjectURL(audioUrl);
+      //   };
     },
     onError: (error) => {
       console.error("Error receiving audio chunk: ", error);
@@ -37,6 +63,7 @@ const ContinuousCapturePage = () => {
     stopRecording();
 
     if (audioBlob) {
+      console.log("audioBlob is not undefined");
       const buffer = Buffer.from(await audioBlob.arrayBuffer());
       const base64 = buffer.toString("base64");
       setAudioContent(base64);
@@ -44,21 +71,20 @@ const ContinuousCapturePage = () => {
   };
 
   useEffect(() => {
-    const captureInterval = setInterval(handleImage, 1000);
+    const captureInterval = setInterval(handleImage, 10000);
     return () => clearInterval(captureInterval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const sendToOpenAI = async () => {
-    console.log("test")
     await submitToOpenAI();
     clearAll();
   };
 
   useEffect(() => {
-    const submitInterval = setInterval(() => void sendToOpenAI(), 1000);
+    const submitInterval = setInterval(() => void sendToOpenAI(), 10000);
     return () => clearInterval(submitInterval);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
