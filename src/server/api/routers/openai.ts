@@ -77,7 +77,7 @@ export const openaiRouter = createTRPCRouter({
 `You are an assistant to a blind person. The images provided below are the view from their camera. Any text is a query from them.
 Please describe the images and answer their questions, potentially using the information from the images. If there is no information to provided from the image, respond with "NOINFO".
 Else, your response should be exclusively either a description of the image or an answer to the question.
-`,
+`.trim(),
           },
           {
             role: "user",
