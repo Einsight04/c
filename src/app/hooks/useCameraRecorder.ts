@@ -17,7 +17,7 @@ export default function useCameraRecorder() {
         // Convert the canvas image to a data URL
         const dataUrl = canvas.toDataURL("image/jpeg");
 
-        console.log("imageDataUrl", dataUrl);
+        // console.log("imageDataUrl", dataUrl);
         return dataUrl;
       }
     }

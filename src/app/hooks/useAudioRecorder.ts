@@ -31,6 +31,12 @@ const useAudioRecorder = (): UseAudioRecorderReturn => {
           const audioBlob = new Blob(audioChunks, { type: "audio/mp3" });
           const url = URL.createObjectURL(audioBlob);
           setAudioUrl(url);
+          console.log(`Setting audioBlob HERE SHITTER`);
+          if (audioBlob.size > 0) {
+            console.log(`THERE IS A BLOB HERE 2`);
+          } else {
+            console.log(`THERE IS NO BLOB HERE 2 FUCK FUCK FUCK`); 
+          }
           setAudioBlob(audioBlob);
         };
 

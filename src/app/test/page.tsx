@@ -65,22 +65,27 @@ const ContinuousCapturePage = () => {
     clearAll();
   };
 
-  const onAudioButtonRelease = async () => {
-    stopRecording();
-
-    if (audioBlob) {
-      const buffer = Buffer.from(await audioBlob.arrayBuffer());
-      const base64Audio = buffer.toString("base64");
-
-      setAudioContent(base64Audio);
+  useEffect(() => {
+  if (audioBlob) {
+    // Logic to handle audioBlob
+    const t = async () => {
+        if (audioBlob.size > 0){
+            console.log("do we have a blob?")
+        }
+        const buffer = Buffer.from(await audioBlob.arrayBuffer());
+        const base64Audio = buffer.toString("base64");
+        setAudioContent(base64Audio);
     }
-  };
+    void t();
+  }
+}, [audioBlob]);
 
-  //   useEffect(() => {
-  //     const imageCaptureInterval = setInterval(handleImage, 5000);
-  //     return () => clearInterval(imageCaptureInterval);
-  //     // eslint-disable-next-line react-hooks/exhaustive-deps
-  //   }, []);
+
+    useEffect(() => {
+      const imageCaptureInterval = setInterval(handleImage, 10000);
+      return () => clearInterval(imageCaptureInterval);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
   //   useEffect(() => {
   //     const apiSubmissionInterval = setInterval(() => void sendToOpenAI(), 10000);
@@ -100,9 +105,9 @@ const ContinuousCapturePage = () => {
       <div style={{ padding: "20px", textAlign: "center" }}>
         <button
           onMouseDown={startRecording}
-          onMouseUp={onAudioButtonRelease}
+          onMouseUp={stopRecording}
           onTouchStart={startRecording}
-          onTouchEnd={onAudioButtonRelease}
+          onTouchEnd={stopRecording}
           style={{
             padding: "10px 20px",
             fontSize: "16px",
