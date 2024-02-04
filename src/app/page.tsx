@@ -11,6 +11,8 @@ import { createClient } from "@deepgram/sdk";
 
 import Map, { GeolocateControl } from "react-map-gl";
 import { env } from "~/env";
+import { useBayun } from "./auth/bayun-client";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   noStore();

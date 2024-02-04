@@ -37,7 +37,6 @@ const ContinuousCapturePage = () => {
     )
       return;
 
-    isPlayingRef.current = true;
     const audioChunk = audioQueue.current.shift();
     if (audioChunk === null) return;
 
@@ -45,6 +44,7 @@ const ContinuousCapturePage = () => {
     const arrayBuffer = await response.arrayBuffer();
     console.log("ARRAY BUFFER", arrayBuffer);
 
+    isPlayingRef.current = true;
     audioContextRef.current.decodeAudioData(
       arrayBuffer,
       (audioBuffer) => {
