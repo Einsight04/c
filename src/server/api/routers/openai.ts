@@ -72,6 +72,14 @@ export const openaiRouter = createTRPCRouter({
         model: "gpt-4-vision-preview",
         messages: [
           {
+            role: 'system',
+            content:
+`You are an assistant to a blind person. The images provided below are the view from their camera. Any text is a query from them.
+Please describe the images and answer their questions, potentially using the information from the images. If there is no information to provided from the image, respond with "NOINFO".
+Else, your response should be exclusively either a description of the image or an answer to the question.
+`,
+          },
+          {
             role: "user",
             content,
           },
@@ -99,6 +107,12 @@ export const openaiRouter = createTRPCRouter({
           let accum = "";
           for await (const message of response) {
             const chunk = message.choices[0]?.delta.content ?? null;
+
+            // TODO: might want to just not start the elevenlabs connection if there's no text
+            // have to start streaming chatgpt earlier then.
+            if (chunk === "NOINFO") {
+              break;
+            }
 
             if (chunk) {
               if (
