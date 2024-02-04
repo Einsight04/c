@@ -16,6 +16,7 @@ export const openaiRouter = createTRPCRouter({
     return observable<{ chunk: string }>((emit) => {
       const listener = (chunk: string) => {
         emit.next({ chunk });
+        // console.log("Received audio chunk", chunk);
       };
 
       ee.on("audioChunk", listener);
@@ -26,8 +27,8 @@ export const openaiRouter = createTRPCRouter({
     });
   }),
 
-  // This shit probably works idk
-  sendTextAndImages: publicProcedure
+  // I think this shit works now
+   sendTextAndImages: publicProcedure
     .input(
       z.object({
         audioBase64: z.optional(z.string()),
