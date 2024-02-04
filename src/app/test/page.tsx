@@ -132,7 +132,7 @@ const ContinuousCapturePage = () => {
 
       const buffer = Buffer.from(await audioBlob.arrayBuffer());
       const base64Audio = buffer.toString("base64");
-      await setAudio(base64Audio);
+      setAudio(base64Audio);
     };
 
     void setupProcess();

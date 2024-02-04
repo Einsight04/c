@@ -18,8 +18,16 @@ import { useRouter } from "next/navigation";
 export default function Home() {
   noStore();
 
+  const { isSignedIn } = useBayun();
+  const router = useRouter();
+
   const geoControlRef = useRef<mapboxgl.GeolocateControl>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!isSignedIn()) router.push("/auth");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (isMapLoaded) {

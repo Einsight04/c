@@ -34,7 +34,7 @@ export default function SignIn() {
   async function handleBayunLogin(username: string, password: string) {
     bayun.signIn(username, password);
 
-    router.push("/camera-and-audio");
+    router.push("/");
   }
 
   return (
