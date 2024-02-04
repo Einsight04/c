@@ -13,12 +13,6 @@ dependencies:
   '@hookform/resolvers':
     specifier: ^3.3.4
     version: 3.3.4(react-hook-form@7.50.0)
-  '@heroicons/react':
-    specifier: ^2.1.1
-    version: 2.1.1(react@18.2.0)
-  '@hookform/resolvers':
-    specifier: ^3.3.4
-    version: 3.3.4(react-hook-form@7.50.0)
   '@mapbox/mapbox-sdk':
     specifier: ^0.14.0
     version: 0.14.0
@@ -49,9 +43,6 @@ dependencies:
   '@types/mapbox-gl':
     specifier: ^2.7.20
     version: 2.7.20
-  '@types/mapbox-gl':
-    specifier: ^2.7.20
-    version: 2.7.20
   express:
     specifier: ^4.18.2
     version: 4.18.2
@@ -73,6 +64,12 @@ dependencies:
   react-hook-form:
     specifier: ^7.50.0
     version: 7.50.0(react@18.2.0)
+  react-icons:
+    specifier: ^5.0.1
+    version: 5.0.1(react@18.2.0)
+  react-map-gl:
+    specifier: ^7.1.7
+    version: 7.1.7(mapbox-gl@3.1.2)(react-dom@18.2.0)(react@18.2.0)
   server-only:
     specifier: ^0.0.1
     version: 0.0.1
@@ -270,22 +267,6 @@ packages:
     resolution: {integrity: sha512-foQZKJig7Ob0BMAYBfcJk8d77QtOe7Wo4ox7ff1lQYoNNAb6jwcY1ncdoy2e9wQZzvNy7ODZCYJkK8kzmcAnAg==}
     dependencies:
       '@hapi/hoek': 9.3.0
-    dev: false
-
-  /@heroicons/react@2.1.1(react@18.2.0):
-    resolution: {integrity: sha512-JyyN9Lo66kirbCMuMMRPtJxtKJoIsXKS569ebHGGRKbl8s4CtUfLnyKJxteA+vIKySocO4s1SkTkGS4xtG/yEA==}
-    peerDependencies:
-      react: '>= 16'
-    dependencies:
-      react: 18.2.0
-    dev: false
-
-  /@hookform/resolvers@3.3.4(react-hook-form@7.50.0):
-    resolution: {integrity: sha512-o5cgpGOuJYrd+iMKvkttOclgwRW86EsWJZZRC23prf0uU2i48Htq4PuT73AVb9ionFyZrwYEITuOFGF+BydEtQ==}
-    peerDependencies:
-      react-hook-form: ^7.0.0
-    dependencies:
-      react-hook-form: 7.50.0(react@18.2.0)
     dev: false
 
   /@heroicons/react@2.1.1(react@18.2.0):
@@ -4007,11 +3988,10 @@ packages:
       react: 18.2.0
     dev: false
 
-  /react-hook-form@7.50.0(react@18.2.0):
-    resolution: {integrity: sha512-AOhuzM3RdP09ZCnq+Z0yvKGHK25yiOX5phwxjV9L7U6HMla10ezkBnvQ+Pk4GTuDfsC5P2zza3k8mawFwFLVuQ==}
-    engines: {node: '>=12.22.0'}
+  /react-icons@5.0.1(react@18.2.0):
+    resolution: {integrity: sha512-WqLZJ4bLzlhmsvme6iFdgO8gfZP17rfjYEJ2m9RsZjZ+cc4k1hTzknEz63YS1MeT50kVzoa1Nz36f4BEx+Wigw==}
     peerDependencies:
-      react: ^16.8.0 || ^17 || ^18
+      react: '*'
     dependencies:
       react: 18.2.0
     dev: false
