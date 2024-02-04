@@ -92,7 +92,7 @@ export const openaiRouter = createTRPCRouter({
         name: feature.text, // or feature.properties.name based on the API response structure
         address: feature.place_name, // or a more detailed assembly if needed
         coordinates: feature.geometry.coordinates,
-      }));
+      } as const));
 
       const response = await ctx.openai.chat.completions.create({
         model: "gpt-4-vision-preview",
@@ -104,6 +104,9 @@ export const openaiRouter = createTRPCRouter({
               `You are acting as the eyes for a blind person. Images from their camera will be provided, and your job is to act as if you're there and describe IMPORTANT things they can see. Don't describe a garbage can off to the side unless they specifically ask about it. It's important you also warn them about potentially hazards, such as walls, water, holes, tripping hazards, etc, as they are BLIND and cannot SEE. If you do not warn them, they might get seriously injured! Be sure to stray on the side of caution when it comes to warning them.
 The blind person may also provide a query alongside the camera image, which you should answer using the information in the image. Be sure to still warn them about hazards in the image! 
 When describing the camera image, respond in a short passive way. Don't refer to the image directly, like "The image shows ...", instead say "There is a ...". Make sure your responses are short and straight to the point. Do not exceed 2 sentence responses! Do not comment on the quality of the images.
+
+The person can also ask about nearby restaurants, so if asked, here is a list of nearby restaurants:
+${stores.map(store => `'${store.name}' at ${store.address}`).join("\n")}
 `.trim(),
           },
           {
