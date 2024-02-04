@@ -15,30 +15,19 @@ const ContinuousCapturePage = () => {
 
   const audioContextRef = useRef<AudioContext | null>(null);
 
-  // // Subscription to the streamAudio endpoint
-  // api.openai.streamAudio.useSubscription(undefined, {
-  //   onData: (data) => {
-  //     // these are base64 encoded audio chunks
-  //     console.log(data.chunk);
-  //   },
-  //   onError: (error) => {
-  //     console.error("Error receiving audio chunk: ", error);
-  //   },
-  // });
-
   useEffect(() => {
     // Initialize AudioContext
     audioContextRef.current = new (window.AudioContext ||
-      window.webkitAudioContext)();
+      window.AudioContext)();
 
     // Ensure audio context is resumed after user interaction, as some browsers
     // require user interaction to play audio
-    const resumeAudioContext = () => {
-      audioContextRef.current?.resume();
+    const resumeAudioContext = async () => {
+      await audioContextRef.current?.resume();
     };
 
-    window.addEventListener("click", resumeAudioContext);
-    return () => window.removeEventListener("click", resumeAudioContext);
+    window.addEventListener("click", () => void resumeAudioContext());
+    return () => window.removeEventListener("click", () => void resumeAudioContext());
   }, []);
 
   // Subscription to the streamAudio endpoint
