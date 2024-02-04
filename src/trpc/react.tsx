@@ -16,7 +16,8 @@ import { getUrl, transformer } from "./shared";
 export const api = createTRPCReact<AppRouter>();
 
 const wsClient = createWSClient({
-  url: `ws://localhost:3001`,
+  // url: `ws://localhost:3001`,
+  url: "https://3140-74-12-66-138.ngrok-free.app",
 });
 
 export function TRPCReactProvider(props: { children: React.ReactNode }) {

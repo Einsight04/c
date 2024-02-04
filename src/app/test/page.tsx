@@ -15,8 +15,6 @@ const ContinuousCapturePage = () => {
   const { videoRef, canvasRef, captureImage } = useCameraRecorder();
   const { recording, startRecording, stopRecording, audioBlob } =
     useAudioRecorder();
-  // const { addImage, setAudioContent, clearAll } =
-  //   useOpenAISubmission();
 
   const sendTextAndImages = api.openai.sendTextAndImages.useMutation();
 
@@ -81,7 +79,8 @@ const ContinuousCapturePage = () => {
     };
 
     window.addEventListener("click", () => void resumeAudioContext());
-    return () => window.removeEventListener("click", () => void resumeAudioContext());
+    return () =>
+      window.removeEventListener("click", () => void resumeAudioContext());
   }, []);
 
   const playNextChunk = async () => {
