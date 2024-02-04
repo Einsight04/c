@@ -19,7 +19,12 @@ const useAudioRecorder = (): UseAudioRecorderReturn => {
 
   const startRecording = useCallback(() => {
     navigator.mediaDevices
-      .getUserMedia({ audio: true })
+      .getUserMedia({
+        audio: true,
+        video: {
+          facingMode: "environment",
+        },
+      })
       .then((stream) => {
         const recorder = new MediaRecorder(stream);
         const audioChunks: BlobPart[] = [];
