@@ -17,6 +17,7 @@ const AuthContext = createContext<BayunContextType | undefined>(undefined);
 
 const BayunProvider = ({ children }: BayunProviderProps) => {
   const [sessionId, setSessionId] = useState<string>("");
+  const [isSignedIn, setIsSignedIn] = useState<boolean>(sessionId !== "");
 
   const BayunCore = (window as any).BayunCore;
   const bayunClient = BayunCore.init(
@@ -39,6 +40,7 @@ const BayunProvider = ({ children }: BayunProviderProps) => {
       () => {},
       ({ sessionId }: { sessionId: string }) => {
         setSessionId(sessionId);
+        setIsSignedIn(true);
       },
       (err: any) => console.error("bayun login error", err),
     );
@@ -46,10 +48,7 @@ const BayunProvider = ({ children }: BayunProviderProps) => {
 
   const signOut = () => {
     bayunClient.logout(sessionId);
-  };
-
-  const isSignedIn = () => {
-    return sessionId !== "";
+    setIsSignedIn(false);
   };
 
   return (
