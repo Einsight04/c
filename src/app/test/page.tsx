@@ -14,51 +14,56 @@ const ContinuousCapturePage = () => {
     useOpenAISubmission();
 
   const audioContextRef = useRef<AudioContext | null>(null);
+  const audioQueue = useRef<Array<string>>([]);
+  const isPlayingRef = useRef<boolean>(false);
 
   useEffect(() => {
-    // Initialize AudioContext
     audioContextRef.current = new (window.AudioContext ||
-      window.AudioContext)();
+      window.webkitAudioContext)();
 
-    // Ensure audio context is resumed after user interaction, as some browsers
-    // require user interaction to play audio
     const resumeAudioContext = async () => {
       await audioContextRef.current?.resume();
     };
 
-    window.addEventListener("click", () => void resumeAudioContext());
-    return () =>
-      window.removeEventListener("click", () => void resumeAudioContext());
+    window.addEventListener("click", resumeAudioContext);
+    return () => window.removeEventListener("click", resumeAudioContext);
   }, []);
+
+  const playNextChunk = async () => {
+    if (
+      isPlayingRef.current ||
+      audioQueue.current.length === 0 ||
+      !audioContextRef.current
+    )
+      return;
+
+    isPlayingRef.current = true;
+    const audioChunk = audioQueue.current.shift();
+    const response = await fetch(`data:audio/mp3;base64,${audioChunk}`);
+    const arrayBuffer = await response.arrayBuffer();
+    console.log("ARRAY BUFFER", arrayBuffer);
+
+    audioContextRef.current.decodeAudioData(
+      arrayBuffer,
+      (audioBuffer) => {
+        const source = audioContextRef.current.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(audioContextRef.current.destination);
+        source.start();
+        source.onended = () => {
+          isPlayingRef.current = false;
+          playNextChunk(); // Play the next audio chunk after the current one finishes
+        };
+      },
+      (err) => console.error("Error with decoding audio data", err),
+    );
+  };
 
   // Subscription to the streamAudio endpoint
   api.openai.streamAudio.useSubscription(undefined, {
     onData: (data) => {
-      const doStuff = async () => {
-        if (!audioContextRef.current) return;
-
-        const audioChunk = data.chunk;
-        const response = await fetch(`data:audio/mp3;base64,${audioChunk}`);
-        const arrayBuffer = await response.arrayBuffer();
-
-        await audioContextRef.current.decodeAudioData(
-          arrayBuffer,
-          (audioBuffer) => {
-            if (audioContextRef.current) {
-              const source = audioContextRef.current.createBufferSource();
-
-              if (source) {
-                source.buffer = audioBuffer;
-                source.connect(audioContextRef.current.destination);
-                source.start();
-              }
-            }
-          },
-          (err) => console.error("Error decoding audio data", err),
-        );
-      };
-
-      void doStuff();
+      audioQueue.current.push(data.chunk);
+      playNextChunk();
     },
     onError: (error) => {
       console.error("Error receiving audio chunk: ", error);
@@ -87,17 +92,17 @@ const ContinuousCapturePage = () => {
     void setAudio();
   }, [audioBlob, setAudioContent]);
 
-  useEffect(() => {
-    const imageCaptureInterval = setInterval(handleImage, 10000);
-    return () => clearInterval(imageCaptureInterval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   const imageCaptureInterval = setInterval(handleImage, 10000);
+  //   return () => clearInterval(imageCaptureInterval);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
-  useEffect(() => {
-    const apiSubmissionInterval = setInterval(() => void sendToOpenAI(), 10000);
-    return () => clearInterval(apiSubmissionInterval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   const apiSubmissionInterval = setInterval(() => void sendToOpenAI(), 10000);
+  //   return () => clearInterval(apiSubmissionInterval);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   return (
     <div>

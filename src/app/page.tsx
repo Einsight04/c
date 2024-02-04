@@ -81,7 +81,5 @@ export default function Home() {
         positionOptions={{ enableHighAccuracy: true }}
       />
     </Map>
-
-
   );
 }
