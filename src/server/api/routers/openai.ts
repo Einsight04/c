@@ -144,6 +144,7 @@ If the question doesn't relate to the image, don't mention anything about the im
             // TODO: might want to just not start the elevenlabs connection if there's no text
             // have to start streaming chatgpt earlier then.
             if (chunk === "NOINFO") {
+              console.log("no information from chatgpt")
               break;
             }
 
