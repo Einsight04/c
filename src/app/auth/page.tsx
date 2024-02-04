@@ -62,7 +62,7 @@ export default function SignIn() {
                   </label>
                   {errors.username && (
                     <div className="flex text-xs font-medium uppercase tracking-wider text-red-600">
-                      {errors.username?.message}
+                      {errors.username?.message as string}
                     </div>
                   )}
                 </div>
@@ -99,7 +99,7 @@ export default function SignIn() {
                   </label>
                   {errors.password && (
                     <div className="flex text-xs font-medium uppercase tracking-wider text-red-600">
-                      {errors.password?.message}
+                      {errors.password?.message as string}
                     </div>
                   )}
                 </div>

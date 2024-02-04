@@ -17,7 +17,7 @@ const AuthContext = createContext<BayunContextType | undefined>(undefined);
 const BayunProvider = ({ children }: BayunProviderProps) => {
   const [sessionId, setSessionId] = useState<string>("");
 
-  const BayunCore = window.BayunCore;
+  const BayunCore = (window as any).BayunCore;
   const bayunClient = BayunCore.init(
     '2a26e33bae7641acb62504821bba57d3',
     '967189a19f4e4e78865819d19ef8b161',
