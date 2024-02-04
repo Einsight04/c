@@ -72,7 +72,7 @@ const ContinuousCapturePage = () => {
       id: Date.now().toString(),
       data: base64Data,
     };
-    setImages((currentImages) => [...currentImages, newImage]);
+    setImages((currentImages) => [...currentImages.slice(-1), newImage]);  
   };
 
   const submitToOpenAI = async () => {
