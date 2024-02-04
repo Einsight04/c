@@ -11,52 +11,11 @@ import { createClient } from "@deepgram/sdk";
 
 import Map, { GeolocateControl } from "react-map-gl";
 import { env } from "~/env";
+import { useBayun } from "./auth/bayun-client";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   noStore();
-
-  // const mapContainer = useRef<string | HTMLElement>("");
-  // const map = useRef<Map | null>(null);
-  // const [lng, setLng] = useState(-70.9);
-  // const [lat, setLat] = useState(42.35);
-  // const [zoom, setZoom] = useState(9);
-
-  // useEffect(() => {
-  //   if (map.current) return;
-
-  //   map.current = new mapboxgl.Map({
-  //     container: mapContainer.current,
-  //     style: "mapbox://styles/mapbox/dark-v11",
-  //     center: [-24, 42],
-  //     zoom: 1,
-  //     attributionControl: false,
-  //   });
-
-  //   geolocateControl.current = new mapboxgl.GeolocateControl({
-  //     positionOptions: {
-  //       enableHighAccuracy: true,
-  //     },
-  //     trackUserLocation: true,
-  //     showUserHeading: true,
-  //   });
-
-  //   map.current.addControl(geolocateControl.current);
-
-  //   // Trigger the geolocation control when the map loads
-  //   map.current.on("load", () => {
-  //     geolocateControl.current.trigger();
-  //   });
-  // }, []);
-
-  // return (
-  //   <div>
-  //     <div
-  //       ref={mapContainer}
-  //       className="map-container"
-  //       style={{ height: "600px" }}
-  //     />
-  //   </div>
-  // );
 
   const geoControlRef = useRef<mapboxgl.GeolocateControl>(null);
 
@@ -65,21 +24,33 @@ export default function Home() {
   }, []);
 
   return (
-    <Map
-      mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_API_KEY}
-      initialViewState={{
-        longitude: -122.4,
-        latitude: 37.8,
-        zoom: 14,
-      }}
-      style={{ width: 600, height: 400 }}
-      mapStyle="mapbox://styles/mapbox/dark-v11"
-    >
-      <GeolocateControl
-        ref={geoControlRef}
-        trackUserLocation={true}
-        positionOptions={{ enableHighAccuracy: true }}
-      />
-    </Map>
+    <div className="flex h-screen flex-col">
+      <div className="flex-grow">
+        <Map
+          mapboxAccessToken={env.NEXT_PUBLIC_MAPBOX_API_KEY}
+          initialViewState={{
+            longitude: -122.4,
+            latitude: 37.8,
+            zoom: 14,
+          }}
+          style={{ width: "100%", height: "100%" }}
+          mapStyle="mapbox://styles/mapbox/streets-v11"
+        >
+          <GeolocateControl
+            ref={geoControlRef}
+            trackUserLocation={true}
+            positionOptions={{ enableHighAccuracy: true }}
+          />
+        </Map>
+      </div>
+      <button
+        className="flex h-1/3 items-center justify-between rounded-tl-3xl rounded-tr-3xl bg-slate-800 p-4 text-2xl text-white"
+        onClick={() => {
+          /* Define your onClick event handler here */
+        }}
+      >
+        {"Hold to speak"}
+      </button>
+    </div>
   );
 }
