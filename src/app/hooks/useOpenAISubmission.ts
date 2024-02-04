@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { api } from "~/trpc/react";
 import { type RouterOutputs } from "~/trpc/shared";
 
@@ -12,65 +12,62 @@ export const useOpenAISubmission = () => {
 
   const [audio, setAudio] = useState<string>("");
   const [images, setImages] = useState<Base64Image[]>([]);
-  const [response, setResponse] =
-    useState<RouterOutputs["openai"]["sendTextAndImages"]>();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [processing, setProcessing] = useState<boolean>(false);
 
-  const clearAll = useCallback(() => {
+  const clearAll = () => {
     setAudio("");
     setImages([]);
-    setResponse();
     setLoading(false);
     setError(null);
-  }, []);
+  };
 
-  const clearAudio = useCallback(() => {
-    setAudio("");
-  }, []);
-
-  const clearImages = useCallback(() => {
-    setImages([]);
-  }, []);
-
-  const addImage = useCallback((base64Data: string) => {
+  const addImage = (base64Data: string) => {
     const newImage: Base64Image = {
       id: Date.now().toString(),
       data: base64Data,
     };
-    setImages((currentImages) => [...currentImages, newImage]); // Why are we passing in the old images???
-  }, []);
+    setImages((currentImages) => [...currentImages, newImage]);
+  };
 
-  const setAudioContent = useCallback((textContent: string) => {
+  const setAudioContent = (textContent: string) => {
     setAudio(textContent);
-  }, []);
+  };
 
-  const submitToOpenAI = useCallback(async () => {
+  const submitToOpenAI = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await sendTextAndImages.mutateAsync({
+      await sendTextAndImages.mutateAsync({
         audioBase64: audio,
         imagesBase64: images.map(({ data }) => data),
       });
-      setResponse(response);
     } catch (error) {
       console.error("Error submitting to OpenAI:", error);
       setError(error instanceof Error ? error.message : String(error));
     } finally {
       setLoading(false);
     }
-  }, [sendTextAndImages, audio, images]);
+  };
+
+  useEffect(() => {
+    const doThing = async () => {
+      if (!audio) return;
+
+      await submitToOpenAI();
+      clearAll();
+    };
+
+    void doThing();
+  }, [audio]);
 
   return {
     clearAll,
-    clearAudio,
-    clearImages,
     addImage,
     setAudioContent,
     submitToOpenAI,
-    response,
     loading,
     error,
   };

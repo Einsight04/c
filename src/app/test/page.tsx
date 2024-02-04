@@ -6,12 +6,67 @@ import useCameraRecorder from "~/app/hooks/useCameraRecorder";
 import { useOpenAISubmission } from "~/app/hooks/useOpenAISubmission";
 import { api } from "~/trpc/react";
 
+type Base64Image = {
+  id: string;
+  data: string;
+};
+
 const ContinuousCapturePage = () => {
   const { videoRef, canvasRef, captureImage } = useCameraRecorder();
   const { recording, startRecording, stopRecording, audioBlob } =
     useAudioRecorder();
-  const { addImage, setAudioContent, submitToOpenAI, clearAll } =
-    useOpenAISubmission();
+  // const { addImage, setAudioContent, clearAll } =
+  //   useOpenAISubmission();
+
+  const sendTextAndImages = api.openai.sendTextAndImages.useMutation();
+
+  const [audio, setAudio] = useState<string>("");
+  const [images, setImages] = useState<Base64Image[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const clearAll = () => {
+    setAudio("");
+    setImages([]);
+    setLoading(false);
+    setError(null);
+  };
+
+  const addImage = (base64Data: string) => {
+    const newImage: Base64Image = {
+      id: Date.now().toString(),
+      data: base64Data,
+    };
+    setImages((currentImages) => [...currentImages, newImage]);
+  };
+
+  const submitToOpenAI = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      await sendTextAndImages.mutateAsync({
+        audioBase64: audio,
+        imagesBase64: images.map(({ data }) => data),
+      });
+    } catch (error) {
+      console.error("Error submitting to OpenAI:", error);
+      setError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const doThing = async () => {
+      if (!audio) return;
+
+      await submitToOpenAI();
+      clearAll();
+    };
+
+    void doThing();
+  }, [audio]);
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioQueue = useRef<Array<string>>([]);
@@ -65,46 +120,36 @@ const ContinuousCapturePage = () => {
   api.openai.streamAudio.useSubscription(undefined, {
     onData: (data) => {
       audioQueue.current.push(data.chunk);
-      playNextChunk();
+      void playNextChunk();
     },
     onError: (error) => {
       console.error("Error receiving audio chunk: ", error);
     },
   });
 
-  const handleImage = () => {
-    const dataUrl = captureImage();
-    if (dataUrl) addImage(dataUrl);
-  };
-
-  const sendToOpenAI = async () => {
-    await submitToOpenAI();
-    clearAll();
-  };
-
   useEffect(() => {
-    const setAudio = async () => {
+    const setupProcess = async () => {
       if (!audioBlob) return;
 
       const buffer = Buffer.from(await audioBlob.arrayBuffer());
       const base64Audio = buffer.toString("base64");
-      setAudioContent(base64Audio);
+      await setAudio(base64Audio);
     };
 
-    void setAudio();
-  }, [audioBlob, setAudioContent]);
+    void setupProcess();
+  }, [audioBlob, setAudio]);
 
-  // useEffect(() => {
-  //   const imageCaptureInterval = setInterval(handleImage, 10000);
-  //   return () => clearInterval(imageCaptureInterval);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+  useEffect(() => {
+    const handleImage = () => {
+      const dataUrl = captureImage();
+      if (dataUrl) addImage(dataUrl);
+    };
 
-  // useEffect(() => {
-  //   const apiSubmissionInterval = setInterval(() => void sendToOpenAI(), 10000);
-  //   return () => clearInterval(apiSubmissionInterval);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+    const imageCaptureInterval = setInterval(handleImage, 1000);
+
+    return () => clearInterval(imageCaptureInterval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div>
@@ -132,7 +177,7 @@ const ContinuousCapturePage = () => {
         >
           {recording ? "Recording... Release to stop" : "Hold to record"}
         </button>
-        <button
+        {/* <button
           onClick={sendToOpenAI}
           style={{
             padding: "10px 20px",
@@ -144,7 +189,7 @@ const ContinuousCapturePage = () => {
           }}
         >
           {" Send to OpenAI "}
-        </button>
+        </button> */}
       </div>
       {audioBlob && (
         <div>

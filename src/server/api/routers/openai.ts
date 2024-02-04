@@ -36,10 +36,6 @@ export const openaiRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      console.log(
-        "======================================= " + input.audioBase64,
-      );
-
       let possibleText = "";
 
       if (input.audioBase64) {
@@ -70,7 +66,11 @@ export const openaiRouter = createTRPCRouter({
           }) as const,
       );
 
-      const content = [...possiblePrompt, ...imageContents];
+      const content = [...possiblePrompt
+        
+        // , ...imageContents
+      
+      ];
       console.log(content);
 
       const response = await ctx.openai.chat.completions.create({
@@ -124,8 +124,12 @@ When describing the camera image, respond in a short passive way. Don't refer to
               const chunks = accum.split(/(?<=[.!?])(?=\s|$)/);
               if (chunks.length > 1) {
                 const sentence = chunks[0]!;
-                accum = chunks.slice(1).join('');
-                console.log(`sending chunk: "${sentence.trim() + " "}" (${chunk}) (${sentence}) (${chunks})`)
+                accum = chunks.slice(1).join("");
+                console.log(
+                  `sending chunk: "${
+                    sentence.trim() + " "
+                  }" (${chunk}) (${sentence}) (${chunks})`,
+                );
 
                 const textMessage = {
                   text: sentence.trim() + " ",
@@ -134,8 +138,6 @@ When describing the camera image, respond in a short passive way. Don't refer to
 
                 socket.send(JSON.stringify(textMessage));
               }
-
-
             }
           }
 
