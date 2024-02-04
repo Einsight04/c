@@ -19,16 +19,16 @@ const ContinuousCapturePage = () => {
       // Assuming data.chunk is a base64-encoded audio string
       // convert from base64 to a Blob
       console.log(data.chunk);
-      const binary = atob(data.chunk);
+      // const binary = atob(data.chunk);
 
-      const byteArr = new Uint8Array(binary.length);
-      for (let i = 0; i < binary.length; i++) {
-        byteArr[i] = binary.charCodeAt(i);
-      }
+      // const byteArr = new Uint8Array(binary.length);
+      // for (let i = 0; i < binary.length; i++) {
+      //   byteArr[i] = binary.charCodeAt(i);
+      // }
 
-      const audioBlob = new Blob([byteArr], { type: "audio/mp3" });
-      const audioUrl = URL.createObjectURL(audioBlob);
-      console.log(audioUrl);
+      // const audioBlob = new Blob([byteArr], { type: "audio/mp3" });
+      // const audioUrl = URL.createObjectURL(audioBlob);
+      // console.log(audioUrl);
 
       //   const audioElement = new Audio(audioUrl);
       //   audioElement
@@ -71,7 +71,7 @@ const ContinuousCapturePage = () => {
   };
 
   useEffect(() => {
-    const captureInterval = setInterval(handleImage, 10000);
+    const captureInterval = setInterval(handleImage, 5000);
     return () => clearInterval(captureInterval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
