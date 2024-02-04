@@ -78,9 +78,13 @@ const ContinuousCapturePage = () => {
   const onAudioButtonRelease = async () => {
     stopRecording();
 
+    console.log("Audio Blob: ", audioBlob);
+
     if (audioBlob) {
       const buffer = Buffer.from(await audioBlob.arrayBuffer());
+      console.log("Buffer: ", buffer);
       const base64Audio = buffer.toString("base64");
+      console.log("Base64 Audio: ", base64Audio);
 
       setAudioContent(base64Audio);
     }
