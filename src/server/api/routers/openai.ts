@@ -63,14 +63,11 @@ export const openaiRouter = createTRPCRouter({
           ({
             type: "image_url",
             image_url: { url: base64Image }, // Assuming JPEG format
+            detail: "low",
           }) as const,
       );
 
-      const content = [...possiblePrompt
-        
-        , ...imageContents
-      
-      ];
+      const content = [...possiblePrompt, ...imageContents];
       console.log(content);
 
       const response = await ctx.openai.chat.completions.create({
@@ -147,11 +144,7 @@ When describing the camera image, respond in a short passive way. Don't refer to
               try_trigger_generation: true,
             };
 
-            console.log(
-              `sending final chunk: "${
-                accum.trim() + " "
-              }"`,
-            );
+            console.log(`sending final chunk: "${accum.trim() + " "}"`);
 
             socket.send(JSON.stringify(textMessage));
           }

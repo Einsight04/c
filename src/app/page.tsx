@@ -30,7 +30,7 @@ const ContinuousCapturePage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { isSignedIn, isLoading } = useBayun();
+  const { isSignedIn, isLoading, signOut } = useBayun();
   const router = useRouter();
 
   const geoControlRef = useRef<mapboxgl.GeolocateControl>(null);
