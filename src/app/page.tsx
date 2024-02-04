@@ -130,12 +130,12 @@ const ContinuousCapturePage = () => {
 
     const audioChunk = audioQueue.current.shift();
     if (audioChunk === null) return;
+    isPlayingRef.current = true;
 
     const response = await fetch(`data:audio/mp3;base64,${audioChunk}`);
     const arrayBuffer = await response.arrayBuffer();
     console.log("ARRAY BUFFER", arrayBuffer);
 
-    isPlayingRef.current = true;
     audioContextRef.current.decodeAudioData(
       arrayBuffer,
       (audioBuffer) => {
