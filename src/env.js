@@ -32,6 +32,9 @@ export const env = createEnv({
    */
   client: {
     NEXT_PUBLIC_MAPBOX_API_KEY: z.string(),
+    NEXT_PUBLIC_BAYUN_APP_ID: z.string(),
+    NEXT_PUBLIC_BAYUN_APP_SECRET: z.string(),
+    NEXT_PUBLIC_BAYUN_SALT: z.string(),
   },
 
   /**
@@ -49,6 +52,9 @@ export const env = createEnv({
     OPEN_AI_API_KEY: process.env.OPEN_AI_API_KEY,
     ELEVENLABS_API_KEY: process.env.ELEVENLABS_API_KEY,
     NEXT_PUBLIC_MAPBOX_API_KEY: process.env.NEXT_PUBLIC_MAPBOX_API_KEY,
+    NEXT_PUBLIC_BAYUN_APP_ID: process.env.NEXT_PUBLIC_BAYUN_APP_ID,
+    NEXT_PUBLIC_BAYUN_APP_SECRET: process.env.NEXT_PUBLIC_BAYUN_APP_SECRET,
+    NEXT_PUBLIC_BAYUN_SALT: process.env.NEXT_PUBLIC_BAYUN_SALT,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

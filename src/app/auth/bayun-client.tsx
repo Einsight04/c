@@ -3,6 +3,7 @@
 import "./bayun.js";
 import React, { createContext, useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { env } from "~/env.js";
 
 interface BayunContextType {
   sessionId: string;
@@ -43,9 +44,9 @@ const BayunProvider = ({ children }: BayunProviderProps) => {
 
   const BayunCore = (window as any).BayunCore;
   const bayunClient = BayunCore.init(
-    "2a26e33bae7641acb62504821bba57d3",
-    "967189a19f4e4e78865819d19ef8b161",
-    "/OFFIlW/NyD3lOSoqmNARjqwgu/UN4dVOowqhITEKfE=",
+    env.NEXT_PUBLIC_BAYUN_APP_ID,
+    env.NEXT_PUBLIC_BAYUN_APP_SECRET,
+    env.NEXT_PUBLIC_BAYUN_SALT,
     BayunCore.LocalDataEncryptionMode.EXPLICIT_LOGOUT_MODE,
     false,
     "https://www.digilockbox.com/",
@@ -64,7 +65,7 @@ const BayunProvider = ({ children }: BayunProviderProps) => {
         localStorage.setItem("bayunSessionId", sessionId);
         setSessionId(sessionId);
         setIsSignedIn(true);
-        router.push('/')
+        router.push("/");
         // setTimeout(() => router.push("/"), 1000);
       },
       (err: any) => console.error("bayun login error", err),

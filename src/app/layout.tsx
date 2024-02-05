@@ -5,7 +5,6 @@ import { Inter } from "next/font/google";
 
 import { TRPCReactProvider } from "~/trpc/react";
 
-import { UserProvider } from "@auth0/nextjs-auth0/client";
 import { lazy } from "react";
 
 const BayunProvider = lazy(() => import("./auth/bayun-client"));
