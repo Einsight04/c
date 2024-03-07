@@ -17,6 +17,7 @@ export const openaiRouter = createTRPCRouter({
   streamAudio: publicProcedure.subscription(() => {
     return observable<{ chunk: string }>((emit) => {
       const listener = (chunk: string) => {
+        console.log("CHUNK: " + chunk.substring(0, 50));
         emit.next({ chunk });
         //console.log("Received audio chunk", chunk);
       };
