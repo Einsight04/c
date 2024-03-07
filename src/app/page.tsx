@@ -145,16 +145,16 @@ const ContinuousCapturePage = () => {
     const arrayBuffer = await response.arrayBuffer();
     console.log("ARRAY BUFFER", arrayBuffer);
 
-    audioContextRef.current.decodeAudioData(
+    void audioContextRef.current.decodeAudioData(
       arrayBuffer,
       (audioBuffer) => {
-        const source = audioContextRef.current.createBufferSource();
+        const source = audioContextRef.current!.createBufferSource();
         source.buffer = audioBuffer;
-        source.connect(audioContextRef.current.destination);
+        source.connect(audioContextRef.current!.destination);
         source.start();
         source.onended = () => {
           isPlayingRef.current = false;
-          playNextChunk(); // Play the next audio chunk after the current one finishes
+          void playNextChunk(); // Play the next audio chunk after the current one finishes
         };
       },
       (err) => {
@@ -259,7 +259,7 @@ const ContinuousCapturePage = () => {
         <button
           className={`absolute bottom-[-1rem] left-0 right-0 z-10 mx-auto flex h-1/3 w-full items-center justify-center p-4 text-2xl text-white ${
             recording ? "bg-[#1f2937]" : "bg-[#030712]"
-          }`}
+          } select-none`}
           onMouseDown={startRecording}
           onMouseUp={stopRecording}
           onTouchStart={() => {

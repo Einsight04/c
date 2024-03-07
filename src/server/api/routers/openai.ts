@@ -7,6 +7,8 @@ import { type AudioData } from "~/types/elevenlabs";
 import { env } from "~/env";
 import { WebSocket } from "ws";
 import { voiceId, model, wsUrl } from "~/server/services/elevenlabs";
+import { type Stream } from "openai/streaming.mjs";
+import { type ChatCompletionChunk } from "openai/resources/index.mjs";
 
 // create a global event emitter (could be replaced by redis, etc)
 const ee = new EventEmitter();
@@ -75,7 +77,8 @@ export const openaiRouter = createTRPCRouter({
       );
 
       const content = [...possiblePrompt, ...imageContents];
-      console.log(content);
+      // console.log("PROMPT: " + possiblePrompt)
+      console.log(possibleText ? `Prompt: ${possibleText}` : "No Prompt");
 
       const results = await ctx.mapbox.geocodingService
         .forwardGeocode({
@@ -88,43 +91,57 @@ export const openaiRouter = createTRPCRouter({
         })
         .send();
 
-      const stores = results.body.features.map((feature) => ({
-        name: feature.text, // or feature.properties.name based on the API response structure
-        address: feature.place_name, // or a more detailed assembly if needed
-        coordinates: feature.geometry.coordinates,
-      } as const));
+      const stores = results.body.features.map(
+        (feature) =>
+          ({
+            name: feature.text, // or feature.properties.name based on the API response structure
+            address: feature.place_name, // or a more detailed assembly if needed
+            coordinates: feature.geometry.coordinates,
+          }) as const,
+      );
 
-      const response = await ctx.openai.chat.completions.create({
-        model: "gpt-4-vision-preview",
-        //model: "gpt-3.5-turbo-0125",
-        messages: [
-          {
-            role: "system",
-            content:
-              `You are acting as the eyes for a blind person. Images from their camera will be provided, and your job is to act as if you're there and describe IMPORTANT things they can see. Don't describe a garbage can off to the side unless they specifically ask about it. It's important you also warn them about potentially hazards, such as walls, water, holes, tripping hazards, etc, as they are BLIND and cannot SEE. If you do not warn them, they might get seriously injured! Be sure to stray on the side of caution when it comes to warning them.
+      console.log(`Stores nearby: ${stores.map((s) => s.name).join(" ")}`);
+
+      let response: Stream<ChatCompletionChunk>;
+
+      try {
+        response = await ctx.openai.chat.completions.create({
+          model: "gpt-4-vision-preview",
+          //model: "gpt-3.5-turbo-0125",
+          messages: [
+            {
+              role: "system",
+              content:
+                `You are acting as the eyes for a blind person. Images from their camera will be provided, and your job is to act as if you're there and describe IMPORTANT things they can see. Don't describe a garbage can off to the side unless they specifically ask about it. It's important you also warn them about potentially hazards, such as walls, water, holes, tripping hazards, etc, as they are BLIND and cannot SEE. If you do not warn them, they might get seriously injured! Be sure to stray on the side of caution when it comes to warning them.
 The blind person may also provide a query alongside the camera image, which you should answer using the information in the image. Be sure to still warn them about hazards in the image! 
 When describing the camera image, respond in a short passive way. Don't refer to the image directly, like "The image shows ...", instead say "There is a ...". Make sure your responses are short and straight to the point. Do not exceed 2 sentence responses! Do not comment on the quality of the images.
 
 The person can also ask about nearby restaurants, so if asked, here is a list of nearby restaurants (within 5km):
-${stores.map(store => `'${store.name}' at ${store.address.split(', ')[1]}`).join("\n")}
+${stores
+  .map((store) => `'${store.name}' at ${store.address.split(", ")[1]}`)
+  .join("\n")}
 Don't mention how you received this information, act as if you searched it up.
 
 If the question doesn't relate to the image, don't mention anything about the image UNLESS a credible threat to the person is present.
 `.trim(),
-          },
-          {
-            role: "user",
-            content,
-          },
-        ],
-        stream: true,
-        max_tokens: 1000,
-      });
+            },
+            {
+              role: "user",
+              content,
+            },
+          ],
+          stream: true,
+          max_tokens: 1000,
+        });
+      } catch (err) {
+        console.error(err);
+        throw new Error("GPT4 REQUEST FAILED");
+      }
 
       const socket = new WebSocket(wsUrl);
 
       // 2. Initialize the connection by sending the BOS message
-      socket.onopen = function (event) {
+      socket.onopen = function (_event) {
         const handleContentChunking = async () => {
           const bosMessage = {
             text: " ",
@@ -144,7 +161,7 @@ If the question doesn't relate to the image, don't mention anything about the im
             // TODO: might want to just not start the elevenlabs connection if there's no text
             // have to start streaming chatgpt earlier then.
             if (chunk === "NOINFO") {
-              console.log("no information from chatgpt")
+              console.log("no information from chatgpt");
               break;
             }
 
