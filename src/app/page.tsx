@@ -35,7 +35,6 @@ const ContinuousCapturePage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { isSignedIn, isLoading, signOut } = useBayun();
   const router = useRouter();
 
   const geoControlRef = useRef<mapboxgl.GeolocateControl>(null);
@@ -200,13 +199,13 @@ const ContinuousCapturePage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  // if (isLoading) {
+  //   return <div>Loading...</div>;
+  // }
 
-  if (!isSignedIn) {
-    router.push("/auth");
-  }
+  // if (!isSignedIn) {
+  //   router.push("/auth");
+  // }
 
   return (
     <>
@@ -241,7 +240,7 @@ const ContinuousCapturePage = () => {
             />
           </Map>
         </div>
-        <button
+        {/* <button
           className="absolute bottom-[-1rem] left-0 right-0 z-10 flex h-1/3 items-center justify-center bg-gray-950 p-4 text-2xl text-white"
           // className="flex h-1/3 items-center justify-center bg-gray-950 p-4 text-2xl text-white"
           onMouseDown={startRecording}
@@ -255,6 +254,24 @@ const ContinuousCapturePage = () => {
           <FaMicrophone
             className="mr-2 h-6 w-6" // Adjust the size as necessary
           />
+          Hold to Prompt
+        </button> */}
+        <button
+          className={`absolute bottom-[-1rem] left-0 right-0 z-10 mx-auto flex h-1/3 w-full items-center justify-center p-4 text-2xl text-white ${
+            recording ? "bg-[#1f2937]" : "bg-[#030712]"
+          }`}
+          onMouseDown={startRecording}
+          onMouseUp={stopRecording}
+          onTouchStart={() => {
+            startRecording();
+            // Optionally change button style for immediate feedback on touch devices
+          }}
+          onTouchEnd={() => {
+            stopRecording();
+            // Optionally revert button style changes here
+          }}
+        >
+          <FaMicrophone className="mr-2 h-6 w-6" />
           Hold to Prompt
         </button>
       </div>
