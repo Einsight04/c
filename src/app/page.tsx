@@ -10,7 +10,7 @@ import { api } from "~/trpc/react";
 
 import Map, { GeolocateControl } from "react-map-gl";
 import { env } from "~/env";
-import { useBayun } from "./auth/bayun-client";
+// import { useBayun } from "./auth/bayun-client";
 import { useRouter } from "next/navigation";
 
 type Base64Image = {

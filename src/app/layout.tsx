@@ -7,7 +7,7 @@ import { TRPCReactProvider } from "~/trpc/react";
 
 import { lazy } from "react";
 
-const BayunProvider = lazy(() => import("./auth/bayun-client"));
+// const BayunProvider = lazy(() => import("./auth/bayun-client"));
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,7 +29,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={`font-sans ${inter.variable}`}>
         <TRPCReactProvider>
-          <BayunProvider>{children}</BayunProvider>
+          {/* <BayunProvider>{children}</BayunProvider> */}
+          {children}
         </TRPCReactProvider>
       </body>
     </html>
