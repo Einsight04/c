@@ -152,7 +152,7 @@ const ContinuousCapturePage = () => {
         source.buffer = audioBuffer;
         source.connect(audioContextRef.current!.destination);
         source.start();
-        source.onended = () => {
+        source.onended = async () => {
           isPlayingRef.current = false;
           void playNextChunk(); // Play the next audio chunk after the current one finishes
         };
